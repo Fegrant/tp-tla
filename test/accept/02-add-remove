@@ -1,0 +1,8 @@
+Graph A
+add to A:
+    nodes b, c, d, e, f
+    edges c-4-d, b-2-c
+
+remove from A:
+    edges c-4-d
+    nodes b

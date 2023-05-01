@@ -23,10 +23,20 @@
 void BeginCommentPatternAction();
 void EndCommentPatternAction();
 
+// Declaracion y nombre de variables
 token GraphTypePatternAction(const char * lexeme);
-
-// Para nombres de variables
 token SymbolPatternAction(const char * lexeme);
+
+// Bloques add y remove
+token AddBlockPatternAction(const char * lexeme);
+token RemoveBlockPatternAction(const char * lexeme);
+token NodesPatternAction(const char * lexeme);
+token EdgesPatternAction(const char * lexeme);
+token BeginBlockPatternAction(const char * lexeme);
+token CommaPatternAction(const char * lexeme);
+token GuionPatternAction(const char * lexeme);
+
+token IntegerPatternAction(const char * lexeme, const int length);
 
 // Patrón desconocido, permite abortar debido a un error de sintaxis.
 token UnknownPatternAction(const char * lexeme, const int length);
