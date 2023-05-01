@@ -44,6 +44,54 @@ token RemoveBlockPatternAction(const char * lexeme) {
 	return REMOVE_BLOCK;
 }
 
+token ApplyBlockPatternAction(const char * lexeme) {
+	LogDebug("ApplyBlockPatternAction: '%s'.", lexeme);
+	yylval.token = APPLY_BLOCK;
+	return APPLY_BLOCK;
+}
+
+token FindCutNodesPatternAction(const char * lexeme) {
+	LogDebug("FindCutNodesPatternAction: '%s'.", lexeme);
+	yylval.token = FIND_CUT_NODES;
+	return FIND_CUT_NODES;
+}
+
+token DeleteCutNodesPatternAction(const char * lexeme) {
+	LogDebug("DeleteCutNodesPatternAction: '%s'.", lexeme);
+	yylval.token = DELETE_CUT_NODES;
+	return DELETE_CUT_NODES;
+}
+
+token BfsPatternAction(const char * lexeme) {
+	LogDebug("BfsPatternAction: '%s'.", lexeme);
+	yylval.token = BFS;
+	return BFS;
+}
+
+token DfsPatternAction(const char * lexeme) {
+	LogDebug("DfsPatternAction: '%s'.", lexeme);
+	yylval.token = DFS;
+	return DFS;
+}
+
+token ToPatternAction(const char * lexeme) {
+	LogDebug("ToPatternAction: '%s'.", lexeme);
+	yylval.token = TO;
+	return TO;
+}
+
+token ColorPatternAction(const char * lexeme) {
+	LogDebug("NodeColorPatternAction: '%s'.", lexeme);
+	yylval.token = COLOR;
+	return COLOR;
+}
+
+token ColorsBlockPatternAction(const char * lexeme) {
+	LogDebug("ColorsBlockPatternAction: '%s'.", lexeme);
+	yylval.token = COLORS_BLOCK;
+	return COLORS_BLOCK;
+}
+
 token NodesPatternAction(const char * lexeme) {
 	LogDebug("NodesPatternAction: '%s'.", lexeme);
 	yylval.token = NODES;

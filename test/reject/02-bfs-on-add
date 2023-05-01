@@ -1,0 +1,6 @@
+Graph B
+
+add to B:
+    nodes a, b, c, d
+    edges a-2-b, b-1-c, a-1-c, c-3-d
+    bfs from a to d

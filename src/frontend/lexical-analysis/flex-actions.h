@@ -36,6 +36,16 @@ token BeginBlockPatternAction(const char * lexeme);
 token CommaPatternAction(const char * lexeme);
 token GuionPatternAction(const char * lexeme);
 
+// Bloque apply
+token ApplyBlockPatternAction(const char * lexeme);
+token FindCutNodesPatternAction(const char * lexeme);
+token DeleteCutNodesPatternAction(const char * lexeme);
+token BfsPatternAction(const char * lexeme);
+token DfsPatternAction(const char * lexeme);
+token ToPatternAction(const char * lexeme);
+token ColorPatternAction(const char * lexeme);
+token ColorsBlockPatternAction(const char * lexeme);
+
 token IntegerPatternAction(const char * lexeme, const int length);
 
 // Patrón desconocido, permite abortar debido a un error de sintaxis.

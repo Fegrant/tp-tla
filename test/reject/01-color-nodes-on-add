@@ -1,0 +1,7 @@
+Graph coloured
+
+add to coloured:
+    nodes a, b, c
+    colors:
+        #ff00ff b, c
+        #00ff00 a

@@ -1,0 +1,7 @@
+Graph oneNode
+
+add to oneNode:
+    nodes a, b
+
+remove from oneNode:
+    nodes b

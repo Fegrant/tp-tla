@@ -22,13 +22,21 @@
 	int declaration;
 	int variable;
 
-	int addBlock;
-	int removeBlock;
+	int addBlockBegin;
+	int removeBlockBegin;
 	int addRemoveBlock;
-	int addBlockInstruction;
-
+	int addRemoveBlockInstruction;
 	int nodeList;
 	int edgeList;
+
+	int applyBlockBegin;
+	int applyBlock;
+	int applyBlockInstruction;
+	int findCutNodes;
+	int deleteCutNodes;
+	int colorsBlockBegin;
+	int colorsBlock;
+	int colorList;
 
 	// Terminales.
 	token token;
@@ -41,11 +49,19 @@
 %token <token> ADD_BLOCK
 %token <token> REMOVE_BLOCK
 %token <token> BEGIN_BLOCK
+%token <token> COLORS_BLOCK
 %token <token> NODES
 %token <token> EDGES
 %token <token> COMMA
 %token <token> GUION
 %token <token> INTEGER
+%token <token> APPLY_BLOCK
+%token <token> BFS
+%token <token> DFS
+%token <token> TO
+%token <token> FIND_CUT_NODES
+%token <token> DELETE_CUT_NODES
+%token <token> COLOR
 
 // Tipos de dato para los no-terminales generados desde Bison.
 %type <program> program
@@ -53,12 +69,17 @@
 %type <instruction> instruction
 %type <declaration> declaration
 %type <variable> variable
-%type <addBlock> addBlock
-%type <removeBlock> removeBlock
+%type <addBlockBegin> addBlockBegin
+%type <removeBlockBegin> removeBlockBegin
 %type <addRemoveBlock> addRemoveBlock
-%type <addBlockInstruction> addBlockInstruction
+%type <addRemoveBlockInstruction> addRemoveBlockInstruction
+%type <applyBlockInstruction> applyBlockInstruction
 %type <nodeList> nodeList
 %type <edgeList> edgeList
+%type <applyBlockBegin> applyBlockBegin
+%type <applyBlock> applyBlock
+%type <colorsBlockBegin> colorsBlockBegin
+%type <colorList> colorList
 
 // Reglas de asociatividad y precedencia (de menor a mayor).
 
@@ -67,44 +88,69 @@
 
 %%
 
-program: declaration block										{ $$ = ProgramGrammarAction(0); }
-	| declaration												{ $$ = ProgramGrammarAction(0); }
+program: declaration block												{ $$ = ProgramGrammarAction(0); }
+	| declaration														{ $$ = ProgramGrammarAction(0); }
 	;
 
-block: instruction block										{ $$ = Ack(); }
-	| instruction												{ $$ = Ack(); }
+block: instruction block												{ $$ = Ack(); }
+	| instruction														{ $$ = Ack(); }
 	;
 
-instruction: declaration										{ $$ = Ack(); }
-	| addBlock													{ $$ = Ack(); }
-	| removeBlock												{ $$ = Ack(); }
+instruction: declaration												{ $$ = Ack(); }
+	| addBlockBegin														{ $$ = Ack(); }
+	| removeBlockBegin													{ $$ = Ack(); }
+	| applyBlockBegin													{ $$ = Ack(); }
 	;
 
-addBlock: ADD_BLOCK SYMBOL BEGIN_BLOCK addRemoveBlock			{ $$ = Ack(); }
+addBlockBegin: ADD_BLOCK SYMBOL BEGIN_BLOCK addRemoveBlock				{ $$ = Ack(); }
 	;
 
-removeBlock: REMOVE_BLOCK SYMBOL BEGIN_BLOCK addRemoveBlock		{ $$ = Ack(); }
+removeBlockBegin: REMOVE_BLOCK SYMBOL BEGIN_BLOCK addRemoveBlock		{ $$ = Ack(); }
 	;
 
-addRemoveBlock: addBlockInstruction addRemoveBlock				{ $$ = Ack(); }
-	| addBlockInstruction										{ $$ = Ack(); }
+applyBlockBegin: APPLY_BLOCK SYMBOL BEGIN_BLOCK applyBlock				{ $$ = Ack(); }
 	;
 
-addBlockInstruction: NODES nodeList								{ $$ = Ack(); }
-	| EDGES edgeList											{ $$ = Ack(); }
+addRemoveBlock: addRemoveBlockInstruction addRemoveBlock				{ $$ = Ack(); }
+	| addRemoveBlockInstruction											{ $$ = Ack(); }
 	;
 
-nodeList: SYMBOL COMMA nodeList									{ $$ = Ack(); }
-	| SYMBOL													{ $$ = Ack(); }
+addRemoveBlockInstruction: NODES nodeList								{ $$ = Ack(); }
+	| EDGES edgeList													{ $$ = Ack(); }
 	;
 
-edgeList: SYMBOL GUION INTEGER GUION SYMBOL COMMA edgeList		{ $$ = Ack(); }
-	| SYMBOL GUION INTEGER GUION SYMBOL							{ $$ = Ack(); }
-
-declaration: GRAPH_TYPE variable				{ $$ = Ack(); }
+nodeList: SYMBOL COMMA nodeList											{ $$ = Ack(); }
+	| SYMBOL															{ $$ = Ack(); }
 	;
 
-variable: SYMBOL								{ $$ = Ack(); }
+edgeList: SYMBOL GUION INTEGER GUION SYMBOL COMMA edgeList				{ $$ = Ack(); }
+	| SYMBOL GUION SYMBOL COMMA edgeList								{ $$ = Ack(); }
+	| SYMBOL GUION INTEGER GUION SYMBOL									{ $$ = Ack(); }
+	| SYMBOL GUION SYMBOL												{ $$ = Ack(); }
+	;
+
+applyBlock: applyBlockInstruction applyBlock							{ $$ = Ack(); }
+	| applyBlockInstruction												{ $$ = Ack(); }
+	;
+
+applyBlockInstruction: BFS SYMBOL TO SYMBOL								{ $$ = Ack(); }
+	| DFS SYMBOL TO SYMBOL												{ $$ = Ack(); }
+	| colorsBlockBegin													{ $$ = Ack(); }
+	| FIND_CUT_NODES													{ $$ = Ack(); }
+	| DELETE_CUT_NODES													{ $$ = Ack(); }
+	;
+
+colorsBlockBegin: COLORS_BLOCK BEGIN_BLOCK colorList					{ $$ = Ack(); }
+	;
+
+colorList: COLOR nodeList colorList										{ $$ = Ack(); }
+	| COLOR nodeList													{ $$ = Ack(); }
+	;
+
+declaration: GRAPH_TYPE variable										{ $$ = Ack(); }
+	;
+
+variable: SYMBOL														{ $$ = Ack(); }
 	;
 
 %%

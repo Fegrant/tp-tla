@@ -1,0 +1,8 @@
+Graph kConnected
+
+add to kConnected:
+    nodes a, b, c, d, e
+    edges a-b, a-c, a-d, a-e
+    edges b-c, b-d, b-e
+    edges c-d, c-e
+    edges d-e
