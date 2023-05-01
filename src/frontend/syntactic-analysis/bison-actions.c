@@ -86,3 +86,35 @@ int IntegerConstantGrammarAction(const int value) {
 	LogDebug("\tIntegerConstantGrammarAction(%d)", value);
 	return value;
 }
+
+int ack() {
+	return 0;
+}
+
+int DeclareGrammarAction(const token varType, const token varName) {
+	LogDebug("\tDeclareGrammarAction(%d): %d", varType, varName);
+	return varName;
+}
+
+int DeclareSymbolAction(const token varName) {
+	LogDebug("\tDeclareSymbolAction: %d", varName);
+	return varName;
+}
+
+// int InstructionBlockGrammarAction(int instruction, int block) {
+// 	LogDebug("InstructionBlockGrammarAction ");
+// 	int toReturn = malloc(sizeof(Block));
+// 	toReturn->type = INSTRUCTION_BLOCK;
+// 	toReturn->block = block;
+// 	toReturn->instruction = instruction;
+// 	return toReturn;
+// }
+
+// int BlockGrammarAction(int instruction) {
+// 	LogDebug("BlockGrammarAction ");
+// 	Block * toReturn = malloc(sizeof(Block));
+// 	toReturn->type = INSTRUCTION;
+// 	toReturn->block = NULL;
+// 	toReturn->instruction = instruction;
+// 	return toReturn;
+// }

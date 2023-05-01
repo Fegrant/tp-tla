@@ -75,6 +75,18 @@ token UnknownPatternAction(const char * lexeme, const int length) {
 	return YYUNDEF;
 }
 
+token GraphTypePatternAction(const char * lexeme) {
+	LogDebug("GraphTypePatternAction: '%s'.", lexeme);
+	yylval.token = GRAPH_TYPE;
+	return GRAPH_TYPE;
+}
+
+token SymbolPatternAction(const char * lexeme) {
+	LogDebug("SymbolPatternAction: '%s'.", lexeme);
+	yylval.token = SYMBOL;
+	return SYMBOL;
+}
+
 void IgnoredPatternAction(const char * lexeme, const int length) {
 	LogDebug("IgnoredPatternAction: '%s' (length = %d).", lexeme, length);
 	// Como no debe hacer nada con el patrón, solo se loguea en consola.

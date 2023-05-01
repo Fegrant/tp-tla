@@ -21,6 +21,9 @@
 	int factor;
 	int constant;
 
+	// No-terminales agregados
+	int variable;
+
 	// Terminales.
 	token token;
 	int integer;
@@ -35,6 +38,9 @@
 %token <token> OPEN_PARENTHESIS
 %token <token> CLOSE_PARENTHESIS
 
+%token <token> GRAPH_TYPE
+%token <token> SYMBOL
+
 %token <integer> INTEGER
 
 // Tipos de dato para los no-terminales generados desde Bison.
@@ -42,6 +48,7 @@
 %type <expression> expression
 %type <factor> factor
 %type <constant> constant
+%type <token> variable
 
 // Reglas de asociatividad y precedencia (de menor a mayor).
 %left ADD SUB
@@ -52,6 +59,24 @@
 
 %%
 
+program: GRAPH_TYPE variable										{ $$ = ack(); }
+	;
+
+variable: SYMBOL													{ $$ = ack(); }
+	;
+
+/* program: instruction block											{ $$ = InstructionBlockGrammarAction($1, $2) }
+	| instruction													{ $$ = BlockGrammarAction($1) }
+	;
+
+instruction: declaration											{ $$ = DeclarationGrammarAction($1) }
+	| addBlock														{ $$ = AddBlockGrammarAction($1) }
+	| removeBlock													{ $$ = RemoveBlockGrammarAction($1) }
+	| applyBlock													{ $$ = ApplyBlockGrammarAction($1) }
+	;
+
+declaration:  */
+/*
 program: expression													{ $$ = ProgramGrammarAction($1); }
 	;
 
@@ -68,5 +93,6 @@ factor: OPEN_PARENTHESIS expression CLOSE_PARENTHESIS				{ $$ = ExpressionFactor
 
 constant: INTEGER													{ $$ = IntegerConstantGrammarAction($1); }
 	;
+*/
 
 %%

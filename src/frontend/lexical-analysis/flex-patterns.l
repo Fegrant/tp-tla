@@ -20,6 +20,7 @@
 digit			[0-9]
 endline			[\n]
 whitespace		[ \f\n\r\t\v]
+letter          [a-zA-Z]
 
 %%
 
@@ -27,6 +28,8 @@ whitespace		[ \f\n\r\t\v]
 <COMMENT>.									{ ; }
 <COMMENT>{endline}							{ ; }
 <COMMENT>"*/"								{ EndCommentPatternAction(); BEGIN(INITIAL); }
+
+"Graph"                                     { return GraphTypePatternAction(yytext); }
 
 "+"											{ return AdditionOperatorPatternAction(yytext); }
 "-"											{ return SubtractionOperatorPatternAction(yytext); }
@@ -37,8 +40,8 @@ whitespace		[ \f\n\r\t\v]
 ")"											{ return CloseParenthesisPatternAction(yytext); }
 
 {digit}+									{ return IntegerPatternAction(yytext, yyleng); }
-
 {whitespace}								{ IgnoredPatternAction(yytext, yyleng); }
+{letter}+                                   { return SymbolPatternAction(yytext); }
 
 .											{ return UnknownPatternAction(yytext, yyleng); }
 

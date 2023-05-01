@@ -14,6 +14,9 @@
 // Programa.
 int ProgramGrammarAction(const int value);
 
+// Added blocks
+int ack();
+
 // Expresión.
 int AdditionExpressionGrammarAction(const int leftValue, const int rightValue);
 int SubtractionExpressionGrammarAction(const int leftValue, const int rightValue);
@@ -27,5 +30,11 @@ int ConstantFactorGrammarAction(const int value);
 
 // Constantes.
 int IntegerConstantGrammarAction(const int value);
+
+// int DeclareGrammarAction(const int varType, const int varName);
+// int DeclareSymbolAction(const int varName);
+
+// Block * InstructionBlockGrammarAction(Instruction * instruction, Block * block);
+// Block * BlockGrammarAction(Instruction * instruction);
 
 #endif

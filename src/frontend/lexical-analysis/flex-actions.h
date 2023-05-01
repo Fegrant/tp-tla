@@ -32,6 +32,10 @@ token MultiplicationOperatorPatternAction(const char * lexeme);
 token OpenParenthesisPatternAction(const char * lexeme);
 token SubtractionOperatorPatternAction(const char * lexeme);
 
+// Para nombres de variables
+token GraphTypePatternAction(const char * lexeme);
+token SymbolPatternAction(const char * lexeme);
+
 // Patrón desconocido, permite abortar debido a un error de sintaxis.
 token UnknownPatternAction(const char * lexeme, const int length);
 
