@@ -17,7 +17,6 @@
 %x COMMENT
 
 /* Patrones reutilizables. */
-digit			[0-9]
 endline			[\n]
 whitespace		[ \f\n\r\t\v]
 letter          [a-zA-Z]
@@ -31,15 +30,6 @@ letter          [a-zA-Z]
 
 "Graph"                                     { return GraphTypePatternAction(yytext); }
 
-"+"											{ return AdditionOperatorPatternAction(yytext); }
-"-"											{ return SubtractionOperatorPatternAction(yytext); }
-"*"											{ return MultiplicationOperatorPatternAction(yytext); }
-"/"											{ return DivisionOperatorPatternAction(yytext); }
-
-"("											{ return OpenParenthesisPatternAction(yytext); }
-")"											{ return CloseParenthesisPatternAction(yytext); }
-
-{digit}+									{ return IntegerPatternAction(yytext, yyleng); }
 {whitespace}								{ IgnoredPatternAction(yytext, yyleng); }
 {letter}+                                   { return SymbolPatternAction(yytext); }
 

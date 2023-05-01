@@ -26,55 +26,6 @@ void EndCommentPatternAction() {
 	LogDebug("EndCommentPatternAction.");
 }
 
-token AdditionOperatorPatternAction(const char * lexeme) {
-	LogDebug("AdditionOperatorPatternAction: '%s'.", lexeme);
-	yylval.token = ADD;
-	return ADD;
-}
-
-token CloseParenthesisPatternAction(const char * lexeme) {
-	LogDebug("CloseParenthesisPatternAction: '%s'.", lexeme);
-	yylval.token = CLOSE_PARENTHESIS;
-	return CLOSE_PARENTHESIS;
-}
-
-token DivisionOperatorPatternAction(const char * lexeme) {
-	LogDebug("DivisionOperatorPatternAction: '%s'.", lexeme);
-	yylval.token = DIV;
-	return DIV;
-}
-
-token IntegerPatternAction(const char * lexeme, const int length) {
-	LogDebug("IntegerPatternAction: '%s' (length = %d).", lexeme, length);
-	yylval.integer = atoi(lexeme);
-	return INTEGER;
-}
-
-token MultiplicationOperatorPatternAction(const char * lexeme) {
-	LogDebug("MultiplicationOperatorPatternAction: '%s'.", lexeme);
-	yylval.token = MUL;
-	return MUL;
-}
-
-token OpenParenthesisPatternAction(const char * lexeme) {
-	LogDebug("OpenParenthesisPatternAction: '%s'.", lexeme);
-	yylval.token = OPEN_PARENTHESIS;
-	return OPEN_PARENTHESIS;
-}
-
-token SubtractionOperatorPatternAction(const char * lexeme) {
-	LogDebug("SubtractionOperatorPatternAction: '%s'.", lexeme);
-	yylval.token = SUB;
-	return SUB;
-}
-
-token UnknownPatternAction(const char * lexeme, const int length) {
-	LogDebug("UnknownPatternAction: '%s' (length = %d).", lexeme, length);
-	yylval.token = YYUNDEF;
-	// Al emitir este token, el compilador aborta la ejecución.
-	return YYUNDEF;
-}
-
 token GraphTypePatternAction(const char * lexeme) {
 	LogDebug("GraphTypePatternAction: '%s'.", lexeme);
 	yylval.token = GRAPH_TYPE;
@@ -85,6 +36,13 @@ token SymbolPatternAction(const char * lexeme) {
 	LogDebug("SymbolPatternAction: '%s'.", lexeme);
 	yylval.token = SYMBOL;
 	return SYMBOL;
+}
+
+token UnknownPatternAction(const char * lexeme, const int length) {
+	LogDebug("UnknownPatternAction: '%s' (length = %d).", lexeme, length);
+	yylval.token = YYUNDEF;
+	// Al emitir este token, el compilador aborta la ejecución.
+	return YYUNDEF;
 }
 
 void IgnoredPatternAction(const char * lexeme, const int length) {

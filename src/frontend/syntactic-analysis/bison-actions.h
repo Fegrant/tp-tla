@@ -15,26 +15,9 @@
 int ProgramGrammarAction(const int value);
 
 // Added blocks
-int ack();
-
-// Expresión.
-int AdditionExpressionGrammarAction(const int leftValue, const int rightValue);
-int SubtractionExpressionGrammarAction(const int leftValue, const int rightValue);
-int MultiplicationExpressionGrammarAction(const int leftValue, const int rightValue);
-int DivisionExpressionGrammarAction(const int leftValue, const int rightValue);
-int FactorExpressionGrammarAction(const int value);
-
-// Factores.
-int ExpressionFactorGrammarAction(const int value);
-int ConstantFactorGrammarAction(const int value);
-
-// Constantes.
-int IntegerConstantGrammarAction(const int value);
+int Ack();
 
 // int DeclareGrammarAction(const int varType, const int varName);
 // int DeclareSymbolAction(const int varName);
-
-// Block * InstructionBlockGrammarAction(Instruction * instruction, Block * block);
-// Block * BlockGrammarAction(Instruction * instruction);
 
 #endif
