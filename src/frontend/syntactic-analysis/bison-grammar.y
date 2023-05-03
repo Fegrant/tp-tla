@@ -20,7 +20,6 @@
 	int block;
 	int instruction;
 	int declaration;
-	int variable;
 
 	int addBlockBegin;
 	int removeBlockBegin;
@@ -37,6 +36,12 @@
 	int colorsBlockBegin;
 	int colorsBlock;
 	int colorList;
+	int terminalInstuction;
+
+	int cycleOrCompleteBlock;
+	int starOrWheelBlock;
+	int bipartiteCompleteBlock;
+	int groupNodes;
 
 	// Terminales.
 	token token;
@@ -45,30 +50,44 @@
 
 // IDs y tipos de los tokens terminales generados desde Flex.
 %token <token> GRAPH_TYPE
-%token <token> SYMBOL
+%token <token> CYCLE_TYPE
+%token <token> WHEEL_TYPE
+%token <token> STAR_TYPE
+%token <token> COMPLETE_TYPE
+%token <token> BIPARTITE_COMPLETE_TYPE
+
+// Blocks
 %token <token> ADD_BLOCK
 %token <token> REMOVE_BLOCK
 %token <token> BEGIN_BLOCK
-%token <token> COLORS_BLOCK
-%token <token> NODES
-%token <token> EDGES
-%token <token> COMMA
-%token <token> GUION
-%token <token> INTEGER
 %token <token> APPLY_BLOCK
+
+// Apply block actions
 %token <token> BFS
 %token <token> DFS
-%token <token> TO
 %token <token> FIND_CUT_NODES
 %token <token> DELETE_CUT_NODES
+%token <token> COLORS_BLOCK
 %token <token> COLOR
+
+%token <token> NODES
+%token <token> EDGES
+%token <token> CENTER
+%token <token> GROUP
+
+%token <token> COMMA
+%token <token> GUION
+%token <token> GREATER
+%token <token> TO
+
+%token <token> DIGITS
+%token <token> STRING
 
 // Tipos de dato para los no-terminales generados desde Bison.
 %type <program> program
 %type <block> block
 %type <instruction> instruction
 %type <declaration> declaration
-%type <variable> variable
 %type <addBlockBegin> addBlockBegin
 %type <removeBlockBegin> removeBlockBegin
 %type <addRemoveBlock> addRemoveBlock
@@ -80,6 +99,13 @@
 %type <applyBlock> applyBlock
 %type <colorsBlockBegin> colorsBlockBegin
 %type <colorList> colorList
+%type <terminalInstuction> terminalInstuction
+
+%type <cycleOrCompleteBlock> cycleOrCompleteBlock
+%type <starOrWheelBlock> starOrWheelBlock
+%type <bipartiteCompleteBlock> bipartiteCompleteBlock
+%type <groupNodes> groupNodes
+
 
 // Reglas de asociatividad y precedencia (de menor a mayor).
 
@@ -102,13 +128,13 @@ instruction: declaration												{ $$ = Ack(); }
 	| applyBlockBegin													{ $$ = Ack(); }
 	;
 
-addBlockBegin: ADD_BLOCK SYMBOL BEGIN_BLOCK addRemoveBlock				{ $$ = Ack(); }
+addBlockBegin: ADD_BLOCK STRING BEGIN_BLOCK addRemoveBlock				{ $$ = Ack(); }
 	;
 
-removeBlockBegin: REMOVE_BLOCK SYMBOL BEGIN_BLOCK addRemoveBlock		{ $$ = Ack(); }
+removeBlockBegin: REMOVE_BLOCK STRING BEGIN_BLOCK addRemoveBlock		{ $$ = Ack(); }
 	;
 
-applyBlockBegin: APPLY_BLOCK SYMBOL BEGIN_BLOCK applyBlock				{ $$ = Ack(); }
+applyBlockBegin: APPLY_BLOCK STRING BEGIN_BLOCK applyBlock				{ $$ = Ack(); }
 	;
 
 addRemoveBlock: addRemoveBlockInstruction addRemoveBlock				{ $$ = Ack(); }
@@ -119,23 +145,28 @@ addRemoveBlockInstruction: NODES nodeList								{ $$ = Ack(); }
 	| EDGES edgeList													{ $$ = Ack(); }
 	;
 
-nodeList: SYMBOL COMMA nodeList											{ $$ = Ack(); }
-	| SYMBOL															{ $$ = Ack(); }
+nodeList: STRING COMMA nodeList											{ $$ = Ack(); }
+	| STRING															{ $$ = Ack(); }
 	;
 
-edgeList: SYMBOL GUION INTEGER GUION SYMBOL COMMA edgeList				{ $$ = Ack(); }
-	| SYMBOL GUION SYMBOL COMMA edgeList								{ $$ = Ack(); }
-	| SYMBOL GUION INTEGER GUION SYMBOL									{ $$ = Ack(); }
-	| SYMBOL GUION SYMBOL												{ $$ = Ack(); }
+edgeList: STRING GUION DIGITS GUION STRING COMMA edgeList				{ $$ = Ack(); }
+	| STRING GUION STRING COMMA edgeList								{ $$ = Ack(); }
+	| STRING GUION DIGITS GUION STRING									{ $$ = Ack(); }
+	| STRING GUION STRING												{ $$ = Ack(); }
 	;
 
 applyBlock: applyBlockInstruction applyBlock							{ $$ = Ack(); }
 	| applyBlockInstruction												{ $$ = Ack(); }
 	;
 
-applyBlockInstruction: BFS SYMBOL TO SYMBOL								{ $$ = Ack(); }
-	| DFS SYMBOL TO SYMBOL												{ $$ = Ack(); }
+applyBlockInstruction: terminalInstuction GREATER STRING				{ $$ = Ack(); }
+	| terminalInstuction												{ $$ = Ack(); }
+	| colorsBlockBegin GREATER STRING									{ $$ = Ack(); }
 	| colorsBlockBegin													{ $$ = Ack(); }
+	;
+
+terminalInstuction: BFS STRING TO STRING								{ $$ = Ack(); }
+	| DFS STRING TO STRING												{ $$ = Ack(); }
 	| FIND_CUT_NODES													{ $$ = Ack(); }
 	| DELETE_CUT_NODES													{ $$ = Ack(); }
 	;
@@ -147,10 +178,24 @@ colorList: COLOR nodeList colorList										{ $$ = Ack(); }
 	| COLOR nodeList													{ $$ = Ack(); }
 	;
 
-declaration: GRAPH_TYPE variable										{ $$ = Ack(); }
+declaration: GRAPH_TYPE STRING											{ $$ = Ack(); }
+	| CYCLE_TYPE STRING BEGIN_BLOCK cycleOrCompleteBlock				{ $$ = Ack(); }
+	| WHEEL_TYPE STRING BEGIN_BLOCK	starOrWheelBlock					{ $$ = Ack(); }
+	| STAR_TYPE STRING BEGIN_BLOCK starOrWheelBlock						{ $$ = Ack(); }
+	| COMPLETE_TYPE STRING BEGIN_BLOCK cycleOrCompleteBlock				{ $$ = Ack(); }
+	| BIPARTITE_COMPLETE_TYPE STRING BEGIN_BLOCK bipartiteCompleteBlock	{ $$ = Ack(); }
 	;
 
-variable: SYMBOL														{ $$ = Ack(); }
+cycleOrCompleteBlock: NODES nodeList									{ $$ = Ack(); }
+	;
+
+starOrWheelBlock: CENTER STRING NODES nodeList							{ $$ = Ack(); }
+	;
+
+bipartiteCompleteBlock: groupNodes groupNodes							{ $$ = Ack(); }
+	;
+
+groupNodes: GROUP nodeList												{ $$ = Ack(); }
 	;
 
 %%

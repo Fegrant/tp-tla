@@ -25,7 +25,18 @@ void EndCommentPatternAction();
 
 // Declaracion y nombre de variables
 token GraphTypePatternAction(const char * lexeme);
-token SymbolPatternAction(const char * lexeme);
+token CycleTypePatternAction(const char * lexeme);
+token WheelTypePatternAction(const char * lexeme);
+token StarTypePatternAction(const char * lexeme);
+token CompleteTypePatternAction(const char * lexeme);
+token BipartiteCompleteTypePatternAction(const char * lexeme);
+
+token GroupPatternAction(const char * lexeme);
+token CenterPatternAction(const char * lexeme);
+
+token StringPatternAction(const char * lexeme);
+// token VariablePatternAction(const char * lexeme);
+// token FileNamePatternAction(const char * lexeme);
 
 // Bloques add y remove
 token AddBlockPatternAction(const char * lexeme);
@@ -35,6 +46,7 @@ token EdgesPatternAction(const char * lexeme);
 token BeginBlockPatternAction(const char * lexeme);
 token CommaPatternAction(const char * lexeme);
 token GuionPatternAction(const char * lexeme);
+token GreaterPatternAction(const char * lexeme);
 
 // Bloque apply
 token ApplyBlockPatternAction(const char * lexeme);
@@ -46,7 +58,7 @@ token ToPatternAction(const char * lexeme);
 token ColorPatternAction(const char * lexeme);
 token ColorsBlockPatternAction(const char * lexeme);
 
-token IntegerPatternAction(const char * lexeme, const int length);
+token DigitsPatternAction(const char * lexeme, const int length);
 
 // Patrón desconocido, permite abortar debido a un error de sintaxis.
 token UnknownPatternAction(const char * lexeme, const int length);

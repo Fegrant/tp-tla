@@ -32,6 +32,48 @@ token GraphTypePatternAction(const char * lexeme) {
 	return GRAPH_TYPE;
 }
 
+token CycleTypePatternAction(const char * lexeme) {
+	LogDebug("CycleTypePatternAction: '%s'.", lexeme);
+	yylval.token = CYCLE_TYPE;
+	return CYCLE_TYPE;
+}
+
+token WheelTypePatternAction(const char * lexeme) {
+	LogDebug("WheelTypePatternAction: '%s'.", lexeme);
+	yylval.token = WHEEL_TYPE;
+	return WHEEL_TYPE;
+}
+
+token StarTypePatternAction(const char * lexeme) {
+	LogDebug("StarTypePatternAction: '%s'.", lexeme);
+	yylval.token = STAR_TYPE;
+	return STAR_TYPE;
+}
+
+token CompleteTypePatternAction(const char * lexeme) {
+	LogDebug("GraphTypePatternAction: '%s'.", lexeme);
+	yylval.token = COMPLETE_TYPE;
+	return COMPLETE_TYPE;
+}
+
+token BipartiteCompleteTypePatternAction(const char * lexeme) {
+	LogDebug("BipartiteCompleteTypePatternAction: '%s'.", lexeme);
+	yylval.token = BIPARTITE_COMPLETE_TYPE;
+	return BIPARTITE_COMPLETE_TYPE;
+}
+
+token GroupPatternAction(const char * lexeme) {
+	LogDebug("GroupPatternAction: '%s'.", lexeme);
+	yylval.token = GROUP;
+	return GROUP;
+}
+
+token CenterPatternAction(const char * lexeme) {
+	LogDebug("CenterPatternAction: '%s'.", lexeme);
+	yylval.token = CENTER;
+	return CENTER;
+}
+
 token AddBlockPatternAction(const char * lexeme) {
 	LogDebug("AddBlockPatternAction: '%s'.", lexeme);
 	yylval.token = ADD_BLOCK;
@@ -122,16 +164,34 @@ token GuionPatternAction(const char * lexeme) {
 	return GUION;
 }
 
-token SymbolPatternAction(const char * lexeme) {
-	LogDebug("SymbolPatternAction: '%s'.", lexeme);
-	yylval.token = SYMBOL;
-	return SYMBOL;
+token GreaterPatternAction(const char * lexeme) {
+	LogDebug("GreaterPatternAction: '%s'.", lexeme);
+	yylval.token = GREATER;
+	return GREATER;
 }
 
-token IntegerPatternAction(const char * lexeme, const int length) {
-	LogDebug("IntegerPatternAction: '%s' (length = %d).", lexeme, length);
+token StringPatternAction(const char * lexeme) {
+	LogDebug("StringPatternAction: '%s'.", lexeme);
+	yylval.token = STRING;
+	return STRING;
+}
+
+// token VariablePatternAction(const char * lexeme) {
+// 	LogDebug("VariablePatternAction: '%s'.", lexeme);
+// 	yylval.token = VARIABLE;
+// 	return VARIABLE;
+// }
+
+// token FileNamePatternAction(const char * lexeme) {
+// 	LogDebug("FileNamePatternAction: '%s'.", lexeme);
+// 	yylval.token = FILENAME;
+// 	return FILENAME;
+// }
+
+token DigitsPatternAction(const char * lexeme, const int length) {
+	LogDebug("DigitsPatternAction: '%s' (length = %d).", lexeme, length);
 	yylval.integer = atoi(lexeme);
-	return INTEGER;
+	return DIGITS;
 }
 
 token UnknownPatternAction(const char * lexeme, const int length) {

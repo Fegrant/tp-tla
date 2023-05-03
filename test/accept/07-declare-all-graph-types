@@ -1,0 +1,19 @@
+Graph A
+
+Cycle B:
+    nodes a, b, c, d, e
+
+Wheel Cgraph:
+    center a
+    nodes b, c, d
+
+Star anotherGraph:
+    center a
+    nodes b, c, d, e
+
+Complete allLettersWithoutNumbers:
+    nodes a, b, c, d, e
+
+BipartiteComplete LastOne:
+    group a, b, c, d
+    group e, f

@@ -31,6 +31,15 @@ letter          [a-zA-Z]
 <COMMENT>"*/"								{ EndCommentPatternAction(); BEGIN(INITIAL); }
 
 "Graph "                                    { return GraphTypePatternAction(yytext); }
+"Cycle "                                    { return CycleTypePatternAction(yytext); }
+"Wheel "                                    { return WheelTypePatternAction(yytext); }
+"Star "                                     { return StarTypePatternAction(yytext); }
+"Complete "                                 { return CompleteTypePatternAction(yytext); }
+"BipartiteComplete "                        { return BipartiteCompleteTypePatternAction(yytext); }
+
+"group "                                    { return GroupPatternAction(yytext); }
+"center "                                   { return CenterPatternAction(yytext); }
+
 "add to "                                   { return AddBlockPatternAction(yytext); }
 "remove from "                              { return RemoveBlockPatternAction(yytext); }
 "apply to "                                 { return ApplyBlockPatternAction(yytext); }
@@ -47,10 +56,12 @@ letter          [a-zA-Z]
 ","                                         { return CommaPatternAction(yytext); }
 "-"                                         { return GuionPatternAction(yytext); }
 
+">"                                         { return GreaterPatternAction(yytext); }
+
 {color}                                     { return ColorPatternAction(yytext); }
-{digit}+                                    { return IntegerPatternAction(yytext, yyleng); }
+{digit}+                                    { return DigitsPatternAction(yytext, yyleng); }
 {whitespace}								{ IgnoredPatternAction(yytext, yyleng); }
-{letter}+                                   { return SymbolPatternAction(yytext); }
+{letter}+                                   { return StringPatternAction(yytext); }
 
 .											{ return UnknownPatternAction(yytext, yyleng); }
 
