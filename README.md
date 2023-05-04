@@ -1,6 +1,6 @@
 # Compilador para Grafos usando Flex/Bison
 
-Un compilador vacío de ejemplo construido con Flex y Bison.
+Un compilador donde un usuario puede especificar un tipo de grafo, aplicarle operaciones/algoritmos, para luego poder visualizarlo en una imagen generada como salida.
 
 ## Requerimientos
 
