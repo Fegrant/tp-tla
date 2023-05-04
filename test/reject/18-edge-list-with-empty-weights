@@ -1,0 +1,5 @@
+Graph emptyWeights
+
+add to emptyWeights:
+    nodes a, b, c
+    edges a--b, b-4-c

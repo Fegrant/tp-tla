@@ -1,0 +1,6 @@
+Star anotherGraph
+    center a
+    nodes b, c, d, e
+
+remove from anotherGraph:
+    nodes b, c
