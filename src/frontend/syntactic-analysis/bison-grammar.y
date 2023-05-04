@@ -74,6 +74,7 @@
 %token <token> EDGES
 %token <token> CENTER
 %token <token> GROUP
+%token <token> MST
 
 %token <token> COMMA
 %token <token> GUION
@@ -169,6 +170,7 @@ terminalInstuction: BFS STRING TO STRING								{ $$ = Ack(); }
 	| DFS STRING TO STRING												{ $$ = Ack(); }
 	| FIND_CUT_NODES													{ $$ = Ack(); }
 	| DELETE_CUT_NODES													{ $$ = Ack(); }
+	| MST																{ $$ = Ack(); }
 	;
 
 colorsBlockBegin: COLORS_BLOCK BEGIN_BLOCK colorList					{ $$ = Ack(); }

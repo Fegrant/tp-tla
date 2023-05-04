@@ -1,0 +1,10 @@
+Graph coloured
+
+add to coloured:
+    nodes aa, bb, cc, dd, ee
+
+apply to coloured:
+    colors:
+        #fff000 aa, bb
+        #ff0f00 cc, ee
+        #eeffee dd

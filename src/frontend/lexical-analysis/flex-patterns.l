@@ -50,6 +50,7 @@ letter          [a-zA-Z]
 "colors"                                    { return ColorsBlockPatternAction(yytext); }
 "nodes "                                    { return NodesPatternAction(yytext); }
 "edges "                                    { return EdgesPatternAction(yytext); }
+"mst"                                       { return MinimumSpanningTreeAction(yytext); }
 
 "to"                                        { return ToPatternAction(yytext); }
 ":"                                         { return BeginBlockPatternAction(yytext); }

@@ -57,6 +57,7 @@ token DfsPatternAction(const char * lexeme);
 token ToPatternAction(const char * lexeme);
 token ColorPatternAction(const char * lexeme);
 token ColorsBlockPatternAction(const char * lexeme);
+token MinimumSpanningTreeAction(const char * lexeme);
 
 token DigitsPatternAction(const char * lexeme, const int length);
 

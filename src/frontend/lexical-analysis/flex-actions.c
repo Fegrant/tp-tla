@@ -146,6 +146,12 @@ token EdgesPatternAction(const char * lexeme) {
 	return EDGES;
 }
 
+token MinimumSpanningTreeAction(const char * lexeme) {
+	LogDebug("EdgesPatternAction: '%s'.", lexeme);
+	yylval.token = MST;
+	return MST;
+}
+
 token BeginBlockPatternAction(const char * lexeme) {
 	LogDebug("BeginBlockPatternAction: '%s'.", lexeme);
 	yylval.token = BEGIN_BLOCK;

@@ -16,3 +16,4 @@ apply to A:
         #00ff00 c, f		/* Es lo mismo que green c, f */
     find cut nodes
     delete cut nodes > adios
+    mst

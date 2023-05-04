@@ -1,0 +1,8 @@
+Graph runningOutOfNames
+
+add to runningOutOfNames:
+    nodes a, b
+    edges a-10-b
+
+remove from runningOutOfNames:
+    bfs from a to b

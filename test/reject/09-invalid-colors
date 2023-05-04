@@ -1,0 +1,9 @@
+Graph toColor
+
+add to toColor:
+    nodes oneColor, anotherColor
+
+apply to toColor:
+    colors:
+        #ffff oneColor
+        #ff00ff anotherColor
