@@ -1,0 +1,8 @@
+Graph lookingForNames
+
+add to lookingForNames:
+    nodes a, b, c, d
+    edges a-2-b, c-d
+
+apply to lookingForNames:
+    
