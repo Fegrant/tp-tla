@@ -81,7 +81,7 @@ Luego, el borrado de nodos tendría en cuenta sus aristas, por lo que la acción
 
 ### Bloque apply
 
-Por último tenemos el bloque **apply**, donde se pueden aplicarle distintos algoritmos al grafo generado y visualizarlos en un archivo de salida de nombre especificado y extensión **.png**. Dicha redirección se indica con el caracter '>', donde el nombre de archivo actualmente tiene la misma restricción de las variables, al sólo poder ser compuesto por letras.
+Por último tenemos el bloque **apply**, donde se pueden aplicarle distintos algoritmos al grafo generado y visualizarlos en un archivo de salida de nombre especificado. Dicha redirección se indica con el caracter '>', donde el nombre de archivo actualmente tiene la misma restricción de las variables, al sólo poder ser compuesto por letras.
 
 Un ejemplo de este bloque, con todas las operaciones posibles, es:
 
