@@ -74,34 +74,34 @@ token CenterPatternAction(const char * lexeme) {
 	return CENTER;
 }
 
-token AddBlockPatternAction(const char * lexeme) {
-	LogDebug("AddBlockPatternAction: '%s'.", lexeme);
-	yylval.token = ADD_BLOCK;
-	return ADD_BLOCK;
+token AddPatternAction(const char * lexeme) {
+	LogDebug("AddPatternAction: '%s'.", lexeme);
+	yylval.token = ADD;
+	return ADD;
 }
 
-token RemoveBlockPatternAction(const char * lexeme) {
-	LogDebug("RemoveBlockPatternAction: '%s'.", lexeme);
-	yylval.token = REMOVE_BLOCK;
-	return REMOVE_BLOCK;
+token RemovePatternAction(const char * lexeme) {
+	LogDebug("RemovePatternAction: '%s'.", lexeme);
+	yylval.token = REMOVE;
+	return REMOVE;
 }
 
-token ApplyBlockPatternAction(const char * lexeme) {
-	LogDebug("ApplyBlockPatternAction: '%s'.", lexeme);
-	yylval.token = APPLY_BLOCK;
-	return APPLY_BLOCK;
+token ApplyPatternAction(const char * lexeme) {
+	LogDebug("ApplyPatternAction: '%s'.", lexeme);
+	yylval.token = APPLY;
+	return APPLY;
 }
 
-token FindCutNodesPatternAction(const char * lexeme) {
-	LogDebug("FindCutNodesPatternAction: '%s'.", lexeme);
-	yylval.token = FIND_CUT_NODES;
-	return FIND_CUT_NODES;
+token FindPatternAction(const char * lexeme) {
+	LogDebug("FindPatternAction: '%s'.", lexeme);
+	yylval.token = FIND;
+	return FIND;
 }
 
-token DeleteCutNodesPatternAction(const char * lexeme) {
-	LogDebug("DeleteCutNodesPatternAction: '%s'.", lexeme);
-	yylval.token = DELETE_CUT_NODES;
-	return DELETE_CUT_NODES;
+token DeletePatternAction(const char * lexeme) {
+	LogDebug("DeletePatternAction: '%s'.", lexeme);
+	yylval.token = DELETE;
+	return DELETE;
 }
 
 token BfsPatternAction(const char * lexeme) {
@@ -116,10 +116,22 @@ token DfsPatternAction(const char * lexeme) {
 	return DFS;
 }
 
+token CutPatternAction(const char * lexeme) {
+	LogDebug("CutPatternAction: '%s'.", lexeme);
+	yylval.token = CUT;
+	return CUT;
+}
+
 token ToPatternAction(const char * lexeme) {
 	LogDebug("ToPatternAction: '%s'.", lexeme);
 	yylval.token = TO;
 	return TO;
+}
+
+token FromPatternAction(const char * lexeme) {
+	LogDebug("FromPatternAction: '%s'.", lexeme);
+	yylval.token = FROM;
+	return FROM;
 }
 
 token ColorPatternAction(const char * lexeme) {
@@ -128,8 +140,8 @@ token ColorPatternAction(const char * lexeme) {
 	return COLOR;
 }
 
-token ColorsBlockPatternAction(const char * lexeme) {
-	LogDebug("ColorsBlockPatternAction: '%s'.", lexeme);
+token ColorsPatternAction(const char * lexeme) {
+	LogDebug("ColorsPatternAction: '%s'.", lexeme);
 	yylval.token = COLORS_BLOCK;
 	return COLORS_BLOCK;
 }
@@ -164,10 +176,10 @@ token CommaPatternAction(const char * lexeme) {
 	return COMMA;
 }
 
-token GuionPatternAction(const char * lexeme) {
-	LogDebug("GuionPatternAction: '%s'.", lexeme);
-	yylval.token = GUION;
-	return GUION;
+token HyphenPatternAction(const char * lexeme) {
+	LogDebug("HyphenPatternAction: '%s'.", lexeme);
+	yylval.token = HYPHEN;
+	return HYPHEN;
 }
 
 token GreaterPatternAction(const char * lexeme) {

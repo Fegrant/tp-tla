@@ -39,24 +39,26 @@ token StringPatternAction(const char * lexeme);
 // token FileNamePatternAction(const char * lexeme);
 
 // Bloques add y remove
-token AddBlockPatternAction(const char * lexeme);
-token RemoveBlockPatternAction(const char * lexeme);
+token AddPatternAction(const char * lexeme);
+token RemovePatternAction(const char * lexeme);
 token NodesPatternAction(const char * lexeme);
 token EdgesPatternAction(const char * lexeme);
 token BeginBlockPatternAction(const char * lexeme);
 token CommaPatternAction(const char * lexeme);
-token GuionPatternAction(const char * lexeme);
+token HyphenPatternAction(const char * lexeme);
 token GreaterPatternAction(const char * lexeme);
 
 // Bloque apply
-token ApplyBlockPatternAction(const char * lexeme);
-token FindCutNodesPatternAction(const char * lexeme);
-token DeleteCutNodesPatternAction(const char * lexeme);
+token ApplyPatternAction(const char * lexeme);
+token FindPatternAction(const char * lexeme);
+token DeletePatternAction(const char * lexeme);
 token BfsPatternAction(const char * lexeme);
 token DfsPatternAction(const char * lexeme);
+token CutPatternAction(const char * lexeme);
 token ToPatternAction(const char * lexeme);
+token FromPatternAction(const char * lexeme);
 token ColorPatternAction(const char * lexeme);
-token ColorsBlockPatternAction(const char * lexeme);
+token ColorsPatternAction(const char * lexeme);
 token MinimumSpanningTreeAction(const char * lexeme);
 
 token DigitsPatternAction(const char * lexeme, const int length);

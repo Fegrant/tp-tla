@@ -16,10 +16,10 @@
 	*/
 
 	// No-terminales (frontend).
-	int program;
-	int block;
-	int instruction;
-	int declaration;
+	Program * program;
+	BlockList * block;
+	ApplyInstruction * instruction;
+	Graph * declaration;
 
 	int addBlockBegin;
 	int removeBlockBegin;
@@ -27,6 +27,9 @@
 	int addRemoveBlockInstruction;
 	int nodeList;
 	int edgeList;
+
+	EdgeList edge;
+	EdgeList weightedEdge;
 
 	int applyBlockBegin;
 	int applyBlock;
@@ -38,14 +41,17 @@
 	int colorList;
 	int terminalInstuction;
 
-	int cycleOrCompleteBlock;
-	int starOrWheelBlock;
+	int cycleBlock;
+	int completeBlock;
+	int starBlock;
+	int wheelBlock;
 	int bipartiteCompleteBlock;
 	int groupNodes;
 
 	// Terminales.
 	token token;
 	int integer;
+	char * string;
 }
 
 // IDs y tipos de los tokens terminales generados desde Flex.
@@ -57,16 +63,21 @@
 %token <token> BIPARTITE_COMPLETE_TYPE
 
 // Blocks
-%token <token> ADD_BLOCK
-%token <token> REMOVE_BLOCK
+// add to, remove from, apply to, find cut nodes, 
+// delete cut nodes, bfs from, dfs from
+%token <token> ADD
+%token <token> REMOVE
 %token <token> BEGIN_BLOCK
-%token <token> APPLY_BLOCK
+%token <token> APPLY
+
+%token <token> FROM
+%token <token> CUT
 
 // Apply block actions
 %token <token> BFS
 %token <token> DFS
-%token <token> FIND_CUT_NODES
-%token <token> DELETE_CUT_NODES
+%token <token> FIND
+%token <token> DELETE
 %token <token> COLORS_BLOCK
 %token <token> COLOR
 
@@ -77,12 +88,12 @@
 %token <token> MST
 
 %token <token> COMMA
-%token <token> GUION
+%token <token> HYPHEN
 %token <token> GREATER
 %token <token> TO
 
-%token <token> DIGITS
-%token <token> STRING
+%token <integer> DIGITS
+%token <string> STRING
 
 // Tipos de dato para los no-terminales generados desde Bison.
 %type <program> program
@@ -96,14 +107,20 @@
 %type <applyBlockInstruction> applyBlockInstruction
 %type <nodeList> nodeList
 %type <edgeList> edgeList
+
+%type <edge> edge;
+%type <weightedEdge> weightedEdge;
+
 %type <applyBlockBegin> applyBlockBegin
 %type <applyBlock> applyBlock
 %type <colorsBlockBegin> colorsBlockBegin
 %type <colorList> colorList
 %type <terminalInstuction> terminalInstuction
 
-%type <cycleOrCompleteBlock> cycleOrCompleteBlock
-%type <starOrWheelBlock> starOrWheelBlock
+%type <cycleBlock> cycleBlock
+%type <completeBlock> completeBlock
+%type <starBlock> starBlock
+%type <wheelBlock> wheelBlock
 %type <bipartiteCompleteBlock> bipartiteCompleteBlock
 %type <groupNodes> groupNodes
 
@@ -129,32 +146,38 @@ instruction: declaration												{ $$ = Ack(); }
 	| applyBlockBegin													{ $$ = Ack(); }
 	;
 
-addBlockBegin: ADD_BLOCK STRING BEGIN_BLOCK addRemoveBlock				{ $$ = Ack(); }
+addBlockBegin: ADD TO STRING BEGIN_BLOCK addRemoveBlock					{ $$ = CreateAddBlockGrammarAction($3, $5); }
 	;
 
-removeBlockBegin: REMOVE_BLOCK STRING BEGIN_BLOCK addRemoveBlock		{ $$ = Ack(); }
+removeBlockBegin: REMOVE FROM STRING BEGIN_BLOCK addRemoveBlock			{ $$ = CreateRemoveBlockGrammarAction($3, $5); }
 	;
 
-applyBlockBegin: APPLY_BLOCK STRING BEGIN_BLOCK applyBlock				{ $$ = Ack(); }
+applyBlockBegin: APPLY TO STRING BEGIN_BLOCK applyBlock					{ $$ = CreateApplyBlockGrammarAction($3, $5); }
 	;
 
-addRemoveBlock: addRemoveBlockInstruction addRemoveBlock				{ $$ = Ack(); }
-	| addRemoveBlockInstruction											{ $$ = Ack(); }
+addRemoveBlock: addRemoveBlockInstruction addRemoveBlock				{ $$ = AppendBlockGrammarAction($1, $2); }
+	| addRemoveBlockInstruction											{ $$ = BlockGrammarAction($1); }
 	;
 
-addRemoveBlockInstruction: NODES nodeList								{ $$ = Ack(); }
-	| EDGES edgeList													{ $$ = Ack(); }
+addRemoveBlockInstruction: NODES nodeList								{ $$ = NodeListGrammarAction($2); }
+	| EDGES edgeList													{ $$ = EdgeListGrammarAction($2); }
 	;
 
-nodeList: STRING COMMA nodeList											{ $$ = Ack(); }
-	| STRING															{ $$ = Ack(); }
+nodeList: STRING COMMA nodeList											{ $$ = AppendNodeGrammarAction($1, $3); }
+	| STRING															{ $$ = CreateNodeGrammarAction($1); }
 	;
 
-edgeList: STRING GUION DIGITS GUION STRING COMMA edgeList				{ $$ = Ack(); }
-	| STRING GUION STRING COMMA edgeList								{ $$ = Ack(); }
-	| STRING GUION DIGITS GUION STRING									{ $$ = Ack(); }
-	| STRING GUION STRING												{ $$ = Ack(); }
+edgeList: weightedEdge COMMA edgeList									{ $$ = AppendEdgeGrammarAction($1, $3); }
+	| edge COMMA edgeList												{ $$ = AppendEdgeGrammarAction($1, $3); }
+	| weightedEdge														{ $$ = EdgeListGrammarAction($1); }
+	| edge																{ $$ = EdgeListGrammarAction($1); }
 	;
+
+weightedEdge: STRING HYPHEN DIGITS HYPHEN STRING						{ $$ = CreateWeightedEdgeGrammarAction($1, $5, $3); }
+;
+
+edge: STRING HYPHEN STRING 												{ $$ = CreateEdgeGrammarAction($1, $3); }
+;
 
 applyBlock: applyBlockInstruction applyBlock							{ $$ = Ack(); }
 	| applyBlockInstruction												{ $$ = Ack(); }
@@ -166,10 +189,10 @@ applyBlockInstruction: terminalInstuction GREATER STRING				{ $$ = Ack(); }
 	| colorsBlockBegin													{ $$ = Ack(); }
 	;
 
-terminalInstuction: BFS STRING TO STRING								{ $$ = Ack(); }
-	| DFS STRING TO STRING												{ $$ = Ack(); }
-	| FIND_CUT_NODES													{ $$ = Ack(); }
-	| DELETE_CUT_NODES													{ $$ = Ack(); }
+terminalInstuction: BFS FROM STRING TO STRING							{ $$ = Ack(); }
+	| DFS FROM STRING TO STRING											{ $$ = Ack(); }
+	| FIND CUT NODES													{ $$ = Ack(); }
+	| DELETE CUT NODES													{ $$ = Ack(); }
 	| MST																{ $$ = Ack(); }
 	;
 
@@ -180,24 +203,30 @@ colorList: COLOR nodeList colorList										{ $$ = Ack(); }
 	| COLOR nodeList													{ $$ = Ack(); }
 	;
 
-declaration: GRAPH_TYPE STRING											{ $$ = Ack(); }
-	| CYCLE_TYPE STRING BEGIN_BLOCK cycleOrCompleteBlock				{ $$ = Ack(); }
-	| WHEEL_TYPE STRING BEGIN_BLOCK	starOrWheelBlock					{ $$ = Ack(); }
-	| STAR_TYPE STRING BEGIN_BLOCK starOrWheelBlock						{ $$ = Ack(); }
-	| COMPLETE_TYPE STRING BEGIN_BLOCK cycleOrCompleteBlock				{ $$ = Ack(); }
-	| BIPARTITE_COMPLETE_TYPE STRING BEGIN_BLOCK bipartiteCompleteBlock	{ $$ = Ack(); }
+declaration: GRAPH_TYPE STRING											{ $$ = CreateSimpleGraphGrammarAction($2); }
+	| CYCLE_TYPE STRING BEGIN_BLOCK cycleBlock							{ $$ = CreateCycleGraphGrammarAction($2, $4); }
+	| WHEEL_TYPE STRING BEGIN_BLOCK	wheelBlock							{ $$ = CreateWheelGraphGrammarAction($2, $4); }
+	| STAR_TYPE STRING BEGIN_BLOCK starBlock							{ $$ = CreateStarGraphGrammarAction($2, $4); }
+	| COMPLETE_TYPE STRING BEGIN_BLOCK completeBlock					{ $$ = CreateCompleteGraphGrammarAction($2, $4); }
+	| BIPARTITE_COMPLETE_TYPE STRING BEGIN_BLOCK bipartiteCompleteBlock	{ $$ = CreateBipartiteCompleteGraphGrammarAction($2, $4); }
 	;
 
-cycleOrCompleteBlock: NODES nodeList									{ $$ = Ack(); }
+cycleBlock: NODES nodeList												{ $$ = CreateCycleBlockGrammarAction($2); }
 	;
 
-starOrWheelBlock: CENTER STRING NODES nodeList							{ $$ = Ack(); }
+completeBlock: NODES nodeList											{ $$ = CreateCompleteBlockGrammarAction($2); }
 	;
 
-bipartiteCompleteBlock: groupNodes groupNodes							{ $$ = Ack(); }
+starBlock: CENTER STRING NODES nodeList									{ $$ = CreateStarBlockGrammarAction($2, $4); }
 	;
 
-groupNodes: GROUP nodeList												{ $$ = Ack(); }
+wheelBlock: CENTER STRING NODES nodeList								{ $$ = CreateWheelBlockGrammarAction($2, $4); }
+	;
+
+bipartiteCompleteBlock: groupNodes groupNodes							{ $$ = CreateWheelBlockGrammarAction($2, $4); }
+	;
+
+groupNodes: GROUP nodeList												{ $$ = NodeListGrammarAction($2); }
 	;
 
 %%
