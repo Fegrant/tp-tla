@@ -27,7 +27,7 @@ typedef struct {
 */
 // typedef enum {
 // 	EXPRESSION,
-// 	CONSTANT
+// 	CONSTANT|
 // } FactorType;
 
 // typedef struct {
@@ -80,7 +80,7 @@ typedef struct CompleteGraph {
 	struct NodeList * nodeList;
 } CompleteGraph;
 
-typedef struct BipartiteCompleGraph {
+typedef struct BipartiteCompleteGraph {
 	struct NodeList * groupA;
 	struct NodeList * groupB;
 } BipartiteCompleteGraph;
@@ -103,10 +103,8 @@ typedef enum GraphType {
 } GraphType;
 
 typedef struct GraphList {
-	char * name;
 	enum GraphType graphType;
 	union Graph * graph;
-	struct GraphList * next;
 } GraphList;
 
 
@@ -133,23 +131,23 @@ typedef struct DfsBlock {
 } DfsBlock;
 
 typedef struct ColorList {
-	char[7] rgb;
+	char * rgb;
 	struct NodeList * nodes;
 	struct ColorList * next;
 } ColorList;
 
-typedef enum SpecialInstruction {
-	BFS,
-	DFS,
+typedef enum ApplyInstructionType {
+	BFS_TPYE,
+	DFS_TYPE,
 	COLORS,
 	FIND_CUT_NODES,
 	DELETE_CUT_NODES,
-	MST
-} SpecialInstruction;
+	MST_TYPE
+} ApplyInstructionType;
 
 typedef union ApplyInstruction {
 	struct BfsBlock bfs;
-	struct DfsBlock bfs;
+	struct DfsBlock dfs;
 	struct ColorList colors;
 } ApplyInstruction;
 
@@ -161,15 +159,17 @@ typedef struct ApplyInstructionList {
 } ApplyInstructionList;
 
 typedef enum BlockType{
-	ADD,
-	REMOVE,
-	APPLY
+	ADD_BLOCK,
+	REMOVE_BLOCK,
+	APPLY_BLOCK,
+	GRAPH
 } BlockType;
 
 typedef union Block {
+	struct GraphList graph;
 	struct AddBlock add;
 	struct RemoveBlock remove;
-	struct ApplyInstuctionList apply;
+	struct ApplyInstructionList apply;
 } Block;
 
 typedef struct BlockList {
@@ -179,9 +179,8 @@ typedef struct BlockList {
 	struct BlockList * next;
 } BlockList;
 
-typedef struct {
+typedef struct Program{
 	// Expression * expression;
-	struct GraphList * graphs;
 	struct BlockList * actions;
 } Program;
 

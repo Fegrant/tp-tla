@@ -29,14 +29,17 @@ void yyerror(const char * string) {
 * indica que efectivamente el programa de entrada se pudo generar con esta
 * gramática, o lo que es lo mismo, que el programa pertenece al lenguaje.
 */
-int ProgramGrammarAction(const int value) {
-	LogDebug("\tProgramGrammarAction(%d)", value);
+BlockList * ProgramGrammarAction(BlockList * blockList) {
+	// vvvvv De la calculadora vvvvv
+	// LogDebug("\tProgramGrammarAction(%d)", 0);
+	
 	/*
 	* "state" es una variable global que almacena el estado del compilador,
 	* cuyo campo "succeed" indica si la compilación fue o no exitosa, la cual
 	* es utilizada en la función "main".
 	*/
 	state.succeed = true;
+	
 	/*
 	* Por otro lado, "result" contiene el resultado de aplicar el análisis
 	* sintáctico mediante Bison, y almacenar el nood raíz del AST construido
@@ -44,17 +47,36 @@ int ProgramGrammarAction(const int value) {
 	* la expresión se computa on-the-fly, y es la razón por la cual esta
 	* variable es un simple entero, en lugar de un nodo.
 	*/
-	state.result = value;
-	return value;
+	// vvvvv De la calculadora vvvvv
+	// state.result = 0;
+
+	Program * program = calloc(1, sizeof(Program));
+	program->actions = blockList;
+	state.program = program;
+	return blockList;
 }
 
-int Ack() {
-	return 0;
+BlockList * AppendProgramGrammarAction (BlockList * declaration, BlockList * blockList) {
+	declaration->next = blockList;
+	return ProgramGrammarAction(declaration);
 }
 
-int AdditionExpressionGrammarAction(const int leftValue, const int rightValue) {
-	LogDebug("\tAdditionExpressionGrammarAction(%d, %d)", leftValue, rightValue);
-	return Add(leftValue, rightValue);
+// int Ack() {
+// 	return 0;
+// }
+
+// int AdditionExpressionGrammarAction(const int leftValue, const int rightValue) {
+// 	LogDebug("\tAdditionExpressionGrammarAction(%d, %d)", leftValue, rightValue);
+// 	return Add(leftValue, rightValue);
+// }
+
+BlockList * AppendBlockListGrammarAction(BlockList * block, BlockList * list) {
+	block->next = list;
+	return block;
+}
+
+BlockList * BlockListGrammarAction(BlockList * blockList) {
+	return blockList;
 }
 
 EdgeList * CreateWeightedEdgeGrammarAction(char * leftNode, char * rightNode, int weight) {
@@ -112,43 +134,46 @@ Graph * CreateWheelBlockGrammarAction(char * center, NodeList * list) {
 	return graph;
 }
 
-Graph * CreateBipartiteCompleteBlockGrammarAction(char * center, NodeList * list) {
+Graph * CreateBipartiteCompleteBlockGrammarAction(NodeList * groupA, NodeList * groupB) {
 	Graph * graph = calloc(1, sizeof(Graph));
-	graph->bipartiteCompleteGraph.center = center;
-	graph->bipartiteCompleteGraph.nodeList = list;
+	graph->bipartiteCompleteGraph.groupA = groupA;
+	graph->bipartiteCompleteGraph.groupB = groupB;
 	return graph;
 }
 
-GraphList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type) {
+BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type) {
 	GraphList * graphList = calloc(1, sizeof(GraphList));
 	graphList->graph = graph;
-	graphList->name = name;
 	graphList->graphType = type;
-	return graphList;
+	BlockList * block = calloc(1, sizeof(BlockList));
+	block->block->graph = *graphList;
+	block->graphName = name;
+	block->type = GRAPH;
+	return block;
 }
 
-GraphList * CreateSimpleGraphGrammarAction(char * name) {
+BlockList * CreateSimpleGraphGrammarAction(char * name) {
 	return CreateGraphGrammarAction(name, NULL, SIMPLE);
 }
 
-GraphList * CreateCycleGraphGrammarAction(char * name, Graph * graph) {
-	return CreateComplexGraphGrammarAction(name, graph, CYCLE);
+BlockList * CreateCycleGraphGrammarAction(char * name, Graph * graph) {
+	return CreateGraphGrammarAction(name, graph, CYCLE);
 }
 
-GraphList * CreateWheelGraphGrammarAction(char * name, Graph * graph) {
-	return CreateComplexGraphGrammarAction(name, graph, WHEEL);
+BlockList * CreateWheelGraphGrammarAction(char * name, Graph * graph) {
+	return CreateGraphGrammarAction(name, graph, WHEEL);
 }
 
-GraphList * CreateStarGraphGrammarAction(char * name, Graph * graph) {
-	return CreateComplexGraphGrammarAction(name, graph, STAR);
+BlockList * CreateStarGraphGrammarAction(char * name, Graph * graph) {
+	return CreateGraphGrammarAction(name, graph, STAR);
 }
 
-GraphList * CreateCompleteGraphGrammarAction(char * name, Graph * graph) {
-	return CreateComplexGraphGrammarAction(name, graph, COMPLETE);
+BlockList * CreateCompleteGraphGrammarAction(char * name, Graph * graph) {
+	return CreateGraphGrammarAction(name, graph, COMPLETE);
 }
 
-GraphList * CreateBipartiteCompleteGraphGrammarAction(char * name, Graph * graph) {
-	return CreateComplexGraphGrammarAction(name, graph, BIPARTITE_COMPLETE);
+BlockList * CreateBipartiteCompleteGraphGrammarAction(char * name, Graph * graph) {
+	return CreateGraphGrammarAction(name, graph, BIPARTITE_COMPLETE);
 }
 
 BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType type) {
@@ -160,15 +185,15 @@ BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType
 }
 
 BlockList * CreateAddBlockGrammarAction(char * name, Block * block) {
-	return CreateActionBlockGrammarAction(name, block, ADD);
+	return CreateActionBlockGrammarAction(name, block, ADD_BLOCK);
 }
 
 BlockList * CreateRemoveBlockGrammarAction(char * name, Block * block) {
-	return CreateActionBlockGrammarAction(name, block, REMOVE);
+	return CreateActionBlockGrammarAction(name, block, REMOVE_BLOCK);
 }
 
 BlockList * CreateApplyBlockGrammarAction(char * name, Block * block) {
-	return CreateActionBlockGrammarAction(name, block, APPLY);
+	return CreateActionBlockGrammarAction(name, block, APPLY_BLOCK);
 }
 
 BlockList * AppendBlockGrammarAction(BlockList * list, BlockList * block) {
@@ -177,6 +202,81 @@ BlockList * AppendBlockGrammarAction(BlockList * list, BlockList * block) {
 }
 
 BlockList * BlockGrammarAction(BlockList * list) {
+	return list;
+}
+
+ColorList * AppendColorListGrammarAction(ColorList * colorNodes, ColorList * list) {
+	colorNodes->next = list;
+	return colorNodes;
+}
+
+ColorList * ColorListGrammarAction(ColorList * colorList) {
+	return colorList;
+}
+
+ColorList * CreateColorListGrammarAction(char rgb[7], NodeList * nodes) {
+	ColorList * colorList = calloc(1, sizeof(ColorList));
+	colorList->rgb = rgb;
+	colorList->nodes = nodes;
+	return colorList;
+}
+
+ApplyInstructionList * CreateColorsBlockGrammarAction(ColorList * colorList) {
+	ApplyInstructionList * instructionList = calloc(1, sizeof(ApplyInstructionList));
+	instructionList->instructionType = COLORS;
+	instructionList->applyInstruction->colors = *colorList;
+	return instructionList;
+}
+
+ApplyInstructionList * CreateTerminalInstruction(ApplyInstructionType type) {
+	ApplyInstructionList * instructionList = calloc(1, sizeof(ApplyInstructionList));
+	instructionList->instructionType = type;
+	return instructionList;
+}
+
+ApplyInstructionList * BfsBlockGrammarAction(char * from, char * to) {
+	ApplyInstruction * instruction = calloc(1, sizeof(ApplyInstruction));
+	instruction->bfs.from = from;
+	instruction->bfs.to = to;
+	ApplyInstructionList * instructionList = calloc(1, sizeof(ApplyInstructionList));
+	instructionList->applyInstruction = instruction;
+	instructionList->instructionType = BFS_TPYE;
+	return instructionList;
+}
+
+ApplyInstructionList * DfsBlockGrammarAction(char * from, char * to) {
+	ApplyInstruction * instruction = calloc(1, sizeof(ApplyInstruction));
+	instruction->dfs.from = from;
+	instruction->dfs.to = to;
+	ApplyInstructionList * instructionList = calloc(1, sizeof(ApplyInstructionList));
+	instructionList->applyInstruction = instruction;
+	instructionList->instructionType = DFS_TYPE;
+	return instructionList;
+}
+
+ApplyInstructionList * CreateFindCutGrammarActions() {
+	return CreateTerminalInstruction(FIND_CUT_NODES);
+}
+
+ApplyInstructionList * CreateDeleteGrammarAction() {
+	return CreateTerminalInstruction(DELETE_CUT_NODES);
+}
+
+ApplyInstructionList * CreateMstGrammarAction() {
+	return CreateTerminalInstruction(MST_TYPE);
+}
+
+ApplyInstructionList * ApplyInstructionListGrammarAction(ApplyInstructionList * instruction, char * outputFile) {
+	instruction->outputFile = outputFile;
+	return instruction;
+}
+
+ApplyInstructionList * AppendApplyBlockGrammarAction (ApplyInstructionList * instruction, ApplyInstructionList * list) {
+	instruction->next=list;
+	return instruction;
+}
+
+ApplyInstructionList * ApplyBlockGrammarAction (ApplyInstructionList * list) {
 	return list;
 }
 
