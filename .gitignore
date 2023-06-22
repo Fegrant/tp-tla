@@ -27,3 +27,6 @@ bin
 src/frontend/lexical-analysis/flex-scanner.c
 src/frontend/syntactic-analysis/bison-parser.h
 src/frontend/syntactic-analysis/bison-parser.c
+
+# Node
+node_modules

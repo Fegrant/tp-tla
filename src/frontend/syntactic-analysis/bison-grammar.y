@@ -23,8 +23,8 @@
 	BlockList * declaration;
 	BlockList * addBlockBegin;
 	BlockList * removeBlockBegin;
-	BlockList * addRemoveBlock;
-	int addRemoveBlockInstruction;
+	AddRemoveInstructionList * addRemoveBlock;
+	AddRemoveInstructionList * addRemoveBlockInstruction;
 	NodeList * nodeList;
 	EdgeList * edgeList;
 
@@ -38,7 +38,7 @@
 	ApplyInstructionList * deleteCutNodes;
 	ApplyInstructionList * colorsBlockBegin;
 	ApplyInstructionList * colorsBlock;
-	ApplyInstructionList * colorList;
+	ColorList * colorList;
 	ApplyInstructionList * terminalInstuction;
 
 	Graph * cycleBlock;
@@ -46,7 +46,7 @@
 	Graph * starBlock;
 	Graph * wheelBlock;
 	Graph * bipartiteCompleteBlock;
-	Graph * groupNodes;
+	NodeList * groupNodes;
 
 	// Terminales.
 	token token;
@@ -79,7 +79,7 @@
 %token <token> FIND
 %token <token> DELETE
 %token <token> COLORS_BLOCK
-%token <token> COLOR
+%token <string> COLOR
 
 %token <token> NODES
 %token <token> EDGES
@@ -109,8 +109,8 @@
 %type <nodeList> node
 %type <edgeList> edgeList
 
-%type <edge> edge;
-%type <weightedEdge> weightedEdge;
+%type <edge> edge
+%type <weightedEdge> weightedEdge
 
 %type <applyBlockBegin> applyBlockBegin
 %type <applyBlock> applyBlock
@@ -157,19 +157,19 @@ removeBlockBegin: REMOVE FROM STRING BEGIN_BLOCK addRemoveBlock			{ $$ = CreateR
 applyBlockBegin: APPLY TO STRING BEGIN_BLOCK applyBlock					{ $$ = CreateApplyBlockGrammarAction($3, $5); }
 	;
 
-addRemoveBlock: addRemoveBlockInstruction addRemoveBlock				{ $$ = AppendBlockGrammarAction($1, $2); }
-	| addRemoveBlockInstruction											{ $$ = BlockGrammarAction($1); }
+addRemoveBlock: addRemoveBlockInstruction addRemoveBlock				{ $$ = AppendAddRemoveInstructionListGrammarAction($1, $2); }
+	| addRemoveBlockInstruction											{ $$ = AddRemoveInstructionListGrammarAction($1); }
 	;
 
-addRemoveBlockInstruction: NODES nodeList								{ $$ = NodeListGrammarAction($2); }
-	| EDGES edgeList													{ $$ = EdgeListGrammarAction($2); }
+addRemoveBlockInstruction: NODES nodeList								{ $$ = AddRemoveNodeListGrammarAction($2); }
+	| EDGES edgeList													{ $$ = AddRemoveEdgeListGrammarAction($2); }
 	;
 
 nodeList: node COMMA nodeList											{ $$ = AppendNodeGrammarAction($1, $3); }
 	| node																{ $$ = NodeListGrammarAction($1); }
 	;
 
-node: STRING															{ $$ = CreateNodeListGrammarAction($1); }
+node: STRING															{ $$ = CreateNodeGrammarAction($1); }
 	;
 
 edgeList: weightedEdge COMMA edgeList									{ $$ = AppendEdgeGrammarAction($1, $3); }
@@ -179,10 +179,10 @@ edgeList: weightedEdge COMMA edgeList									{ $$ = AppendEdgeGrammarAction($1,
 	;
 
 weightedEdge: STRING HYPHEN DIGITS HYPHEN STRING						{ $$ = CreateWeightedEdgeGrammarAction($1, $5, $3); }
-;
+	;
 
 edge: STRING HYPHEN STRING 												{ $$ = CreateEdgeGrammarAction($1, $3); }
-;
+	;
 
 applyBlock: applyBlockInstruction applyBlock							{ $$ = AppendApplyBlockGrammarAction($1, $2); }
 	| applyBlockInstruction												{ $$ = ApplyBlockGrammarAction($1); }
@@ -225,7 +225,7 @@ cycleBlock: NODES nodeList												{ $$ = CreateCycleBlockGrammarAction($2); 
 completeBlock: NODES nodeList											{ $$ = CreateCompleteBlockGrammarAction($2); }
 	;
 
-starBlock: CENTER STRING NODES nodeList									{ $$ = CreateStarBlockGrammarAction($2, $4); }
+starBlock: CENTER STRING NODES nodeList									{ $$ = CreateWheelBlockGrammarAction($2, $4); }
 	;
 
 wheelBlock: CENTER STRING NODES nodeList								{ $$ = CreateWheelBlockGrammarAction($2, $4); }

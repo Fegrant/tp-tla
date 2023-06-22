@@ -8,12 +8,13 @@ remove from A:
     edges c-4-d
     nodes b	/* Internamente también borra la arista b-c */
 
+
 apply to A:
     bfs from c to d > hola
     dfs from d to c > archivoA
     colors:
-        #ff0000 e, d		/* Es lo mismo que red e, d */
-        #00ff00 c, f		/* Es lo mismo que green c, f */
+        #ff0000 e, d
+        #00ff00 c, f
     find cut nodes
     delete cut nodes > adios
     mst

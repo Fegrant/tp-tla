@@ -61,10 +61,10 @@ letter          [a-zA-Z]
 
 ">"                                         { return GreaterPatternAction(yytext); }
 
-{color}                                     { return ColorPatternAction(yytext); }
+{color}                                     { return ColorPatternAction(yytext, yyleng); }
 {digit}+                                    { return DigitsPatternAction(yytext, yyleng); }
 {whitespace}								{ IgnoredPatternAction(yytext, yyleng); }
-{letter}+                                   { return StringPatternAction(yytext); }
+{letter}+                                   { return StringPatternAction(yytext, yyleng); }
 
 .											{ return UnknownPatternAction(yytext, yyleng); }
 

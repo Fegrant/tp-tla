@@ -25,29 +25,6 @@ typedef struct {
 * De este modo, al recorrer el AST, es posible determinar qué nodos hijos
 * posee según el valor de este enumerado.
 */
-// typedef enum {
-// 	EXPRESSION,
-// 	CONSTANT|
-// } FactorType;
-
-// typedef struct {
-// 	FactorType type;
-// 	Expression * expression;
-// } Factor;
-
-// typedef enum {
-// 	ADDITION,
-// 	SUBTRACTION,
-// 	MULTIPLICATION,
-// 	DIVISION,
-// 	FACTOR
-// } ExpressionType;
-
-// struct Expression {
-// 	ExpressionType type;
-// 	Expression * leftExpression;
-// 	Expression * rightExpression;
-// };
 
 /************************** GRAPH **********************************/
 typedef struct NodeList {
@@ -110,15 +87,21 @@ typedef struct GraphList {
 
 /*************************** BLOCKS *********************************/
 
-typedef struct AddBlock {
-	struct NodeList * nodes;
-	struct EdgeList * edges;
-} AddBlock;
+typedef union AddRemoveInstruction {
+	struct NodeList nodes;
+	struct EdgeList edges;
+} AddRemoveInstruction;
 
-typedef struct RemoveBlock {
-	struct NodeList * nodes;
-	struct EdgeList * edges;
-} RemoveBlock;
+typedef enum AddRemoveInstructionType {
+	NODE_LIST,
+	EDGE_LIST
+} AddRemoveInstructionType;
+
+typedef struct AddRemoveInstructionList {
+	union AddRemoveInstruction * addRemoveInstruction;
+	enum AddRemoveInstructionType instructionType;
+	struct AddRemoveInstructionList * next;
+} AddRemoveInstructionList;
 
 typedef struct BfsBlock {
 	char * from;
@@ -137,7 +120,7 @@ typedef struct ColorList {
 } ColorList;
 
 typedef enum ApplyInstructionType {
-	BFS_TPYE,
+	BFS_TYPE,
 	DFS_TYPE,
 	COLORS,
 	FIND_CUT_NODES,
@@ -167,8 +150,7 @@ typedef enum BlockType{
 
 typedef union Block {
 	struct GraphList graph;
-	struct AddBlock add;
-	struct RemoveBlock remove;
+	struct AddRemoveInstructionList addRemove;
 	struct ApplyInstructionList apply;
 } Block;
 
@@ -179,8 +161,7 @@ typedef struct BlockList {
 	struct BlockList * next;
 } BlockList;
 
-typedef struct Program{
-	// Expression * expression;
+typedef struct Program {
 	struct BlockList * actions;
 } Program;
 

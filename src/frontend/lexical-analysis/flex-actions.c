@@ -1,6 +1,7 @@
 #include "../../backend/support/logger.h"
 #include "flex-actions.h"
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * Implementación de "flex-actions.h".
@@ -134,9 +135,12 @@ token FromPatternAction(const char * lexeme) {
 	return FROM;
 }
 
-token ColorPatternAction(const char * lexeme) {
+token ColorPatternAction(const char * lexeme, const int length) {
 	LogDebug("NodeColorPatternAction: '%s'.", lexeme);
+	char *text = calloc(length + 1, sizeof(char));
+	strncpy(text, lexeme, length);
 	yylval.token = COLOR;
+	yylval.string = text;
 	return COLOR;
 }
 
@@ -188,9 +192,11 @@ token GreaterPatternAction(const char * lexeme) {
 	return GREATER;
 }
 
-token StringPatternAction(const char * lexeme) {
-	LogDebug("StringPatternAction: '%s'.", lexeme);
-	yylval.token = STRING;
+token StringPatternAction(const char * lexeme, const int length) {
+	LogDebug("StringPatternAction: '%s'.[len=%d]", lexeme, length);
+	char *text = calloc(length+1, sizeof(char));
+	strncpy(text, lexeme, length);
+	yylval.string = text;
 	return STRING;
 }
 

@@ -28,6 +28,7 @@ const int main(const int argumentCount, const char ** arguments) {
 			// inicial de la gramática satisfactoriamente.
 			if (state.succeed) {
 				LogInfo("La compilacion fue exitosa.");
+					// LogInfo("a ver %s", state.program->actions->graphName);
 				Generator(state.program);
 			}
 			else {

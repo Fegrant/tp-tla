@@ -21,7 +21,7 @@ BlockList * BlockListGrammarAction(BlockList * blockList);
 EdgeList * CreateWeightedEdgeGrammarAction(char * leftNode, char * rightNode, int weight);
 EdgeList * CreateEdgeGrammarAction(char * leftNode, char * rightNode);
 EdgeList * AppendEdgeGrammarAction(EdgeList * edge, EdgeList * list);
-EdgeList * EdgeGrammarAction(EdgeList * edge);
+EdgeList * EdgeListGrammarAction(EdgeList * edge);
 NodeList * CreateNodeGrammarAction(char * name);
 NodeList * AppendNodeGrammarAction(NodeList * node, NodeList * list);
 NodeList * NodeListGrammarAction(NodeList * list);
@@ -37,9 +37,9 @@ BlockList * CreateStarGraphGrammarAction(char * name, Graph * graph);
 BlockList * CreateCompleteGraphGrammarAction(char * name, Graph * graph);
 BlockList * CreateBipartiteCompleteGraphGrammarAction(char * name, Graph * graph);
 BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType type);
-BlockList * CreateAddBlockGrammarAction(char * name, Block * block);
-BlockList * CreateRemoveBlockGrammarAction(char * name, Block * block);
-BlockList * CreateApplyBlockGrammarAction(char * name, Block * block);
+BlockList * CreateAddBlockGrammarAction(char * name, AddRemoveInstructionList * block);
+BlockList * CreateRemoveBlockGrammarAction(char * name, AddRemoveInstructionList * block);
+BlockList * CreateApplyBlockGrammarAction(char * name, ApplyInstructionList * block);
 BlockList * AppendBlockGrammarAction(BlockList * list, BlockList * block);
 BlockList * BlockGrammarAction(BlockList * list);
 ColorList * AppendColorListGrammarAction(ColorList * colorNodes, ColorList * list);
@@ -55,5 +55,11 @@ ApplyInstructionList * CreateMstGrammarAction();
 ApplyInstructionList * ApplyInstructionListGrammarAction(ApplyInstructionList * instruction, char * outputFile);
 ApplyInstructionList * AppendApplyBlockGrammarAction (ApplyInstructionList * instruction, ApplyInstructionList * list);
 ApplyInstructionList * ApplyBlockGrammarAction (ApplyInstructionList * list);
+
+AddRemoveInstructionList * AddRemoveEdgeListGrammarAction(EdgeList * edgeList);
+AddRemoveInstructionList * AddRemoveNodeListGrammarAction(NodeList * nodeList);
+
+AddRemoveInstructionList * AppendAddRemoveInstructionListGrammarAction(AddRemoveInstructionList * instruction, AddRemoveInstructionList * list);
+AddRemoveInstructionList * AddRemoveInstructionListGrammarAction(AddRemoveInstructionList * list);
 
 #endif

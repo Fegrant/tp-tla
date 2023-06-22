@@ -1,0 +1,29 @@
+{
+  "name": "tp_tla",
+  "version": "1.0.0",
+  "description": "Compiler project for doing graph things.",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fegrant/tp-tla.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fegrant/tp-tla/issues"
+  },
+  "homepage": "https://github.com/Fegrant/tp-tla#readme",
+  "dependencies": {
+    "cytoscape": "^3.25.0",
+    "cytoscape-cose-bilkent": "^4.1.0",
+    "cytoscape-dagre": "^2.5.0",
+    "cytosnap": "^3.1.0"
+  }
+}

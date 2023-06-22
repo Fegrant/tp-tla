@@ -34,7 +34,7 @@ token BipartiteCompleteTypePatternAction(const char * lexeme);
 token GroupPatternAction(const char * lexeme);
 token CenterPatternAction(const char * lexeme);
 
-token StringPatternAction(const char * lexeme);
+token StringPatternAction(const char * lexeme, const int length);
 // token VariablePatternAction(const char * lexeme);
 // token FileNamePatternAction(const char * lexeme);
 
@@ -57,7 +57,7 @@ token DfsPatternAction(const char * lexeme);
 token CutPatternAction(const char * lexeme);
 token ToPatternAction(const char * lexeme);
 token FromPatternAction(const char * lexeme);
-token ColorPatternAction(const char * lexeme);
+token ColorPatternAction(const char * lexeme, const int length);
 token ColorsPatternAction(const char * lexeme);
 token MinimumSpanningTreeAction(const char * lexeme);
 

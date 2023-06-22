@@ -96,7 +96,7 @@ EdgeList * AppendEdgeGrammarAction(EdgeList * edge, EdgeList * list) {
 	return edge;
 } 
 
-EdgeList * EdgeGrammarAction(EdgeList * edge) {
+EdgeList * EdgeListGrammarAction(EdgeList * edge) {
 	return edge;
 }
 
@@ -109,6 +109,33 @@ NodeList * CreateNodeGrammarAction(char * name) {
 NodeList * AppendNodeGrammarAction(NodeList * node, NodeList * list) {
 	node->next = list;
 	return node;
+}
+
+AddRemoveInstructionList * AppendAddRemoveInstructionListGrammarAction(AddRemoveInstructionList * instruction, AddRemoveInstructionList * list) {
+	instruction->next = list;
+	return instruction;
+}
+
+AddRemoveInstructionList * AddRemoveInstructionListGrammarAction(AddRemoveInstructionList * list) {
+	return list;
+}
+
+AddRemoveInstructionList * AddRemoveEdgeListGrammarAction(EdgeList * edgeList) {
+	AddRemoveInstruction * instruction = calloc(1, sizeof(AddRemoveInstruction));
+	instruction = edgeList;
+	AddRemoveInstructionList * instructionList = calloc(1, sizeof(AddRemoveInstructionList));
+	instructionList->addRemoveInstruction = instruction;
+	instructionList->instructionType = EDGE_LIST;
+	return instructionList;
+}
+
+AddRemoveInstructionList * AddRemoveNodeListGrammarAction(NodeList * nodeList) {
+	AddRemoveInstruction * instruction = calloc(1, sizeof(AddRemoveInstruction));
+	instruction = nodeList;
+	AddRemoveInstructionList * instructionList = calloc(1, sizeof(AddRemoveInstructionList));
+	instructionList->addRemoveInstruction = instruction;
+	instructionList->instructionType = NODE_LIST;
+	return instructionList;
 }
 
 NodeList * NodeListGrammarAction(NodeList * list) {
@@ -142,11 +169,12 @@ Graph * CreateBipartiteCompleteBlockGrammarAction(NodeList * groupA, NodeList * 
 }
 
 BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type) {
+	LogDebug("\tCreateGraphGrammarAction(%s) [type=%d]", name, type);
 	GraphList * graphList = calloc(1, sizeof(GraphList));
 	graphList->graph = graph;
 	graphList->graphType = type;
 	BlockList * block = calloc(1, sizeof(BlockList));
-	block->block->graph = *graphList;
+	block->block = graphList;
 	block->graphName = name;
 	block->type = GRAPH;
 	return block;
@@ -184,19 +212,19 @@ BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType
 	return blockList;
 }
 
-BlockList * CreateAddBlockGrammarAction(char * name, Block * block) {
-	return CreateActionBlockGrammarAction(name, block, ADD_BLOCK);
+BlockList * CreateAddBlockGrammarAction(char * name, AddRemoveInstructionList * block) {
+	return CreateActionBlockGrammarAction(name, (Block*) block, ADD_BLOCK);
 }
 
-BlockList * CreateRemoveBlockGrammarAction(char * name, Block * block) {
-	return CreateActionBlockGrammarAction(name, block, REMOVE_BLOCK);
+BlockList * CreateRemoveBlockGrammarAction(char * name, AddRemoveInstructionList * block) {
+	return CreateActionBlockGrammarAction(name, (Block*) block, REMOVE_BLOCK);
 }
 
-BlockList * CreateApplyBlockGrammarAction(char * name, Block * block) {
-	return CreateActionBlockGrammarAction(name, block, APPLY_BLOCK);
+BlockList * CreateApplyBlockGrammarAction(char * name, ApplyInstructionList * block) {
+	return CreateActionBlockGrammarAction(name, (Block*) block, APPLY_BLOCK);
 }
 
-BlockList * AppendBlockGrammarAction(BlockList * list, BlockList * block) {
+BlockList * AppendBlockGrammarAction(BlockList * block, BlockList * list) {
 	block->next = list;
 	return block;
 }
@@ -214,7 +242,7 @@ ColorList * ColorListGrammarAction(ColorList * colorList) {
 	return colorList;
 }
 
-ColorList * CreateColorListGrammarAction(char rgb[7], NodeList * nodes) {
+ColorList * CreateColorListGrammarAction(char * rgb, NodeList * nodes) {
 	ColorList * colorList = calloc(1, sizeof(ColorList));
 	colorList->rgb = rgb;
 	colorList->nodes = nodes;
@@ -224,7 +252,7 @@ ColorList * CreateColorListGrammarAction(char rgb[7], NodeList * nodes) {
 ApplyInstructionList * CreateColorsBlockGrammarAction(ColorList * colorList) {
 	ApplyInstructionList * instructionList = calloc(1, sizeof(ApplyInstructionList));
 	instructionList->instructionType = COLORS;
-	instructionList->applyInstruction->colors = *colorList;
+	instructionList->applyInstruction = colorList;
 	return instructionList;
 }
 
@@ -240,7 +268,7 @@ ApplyInstructionList * BfsBlockGrammarAction(char * from, char * to) {
 	instruction->bfs.to = to;
 	ApplyInstructionList * instructionList = calloc(1, sizeof(ApplyInstructionList));
 	instructionList->applyInstruction = instruction;
-	instructionList->instructionType = BFS_TPYE;
+	instructionList->instructionType = BFS_TYPE;
 	return instructionList;
 }
 
