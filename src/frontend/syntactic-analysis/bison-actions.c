@@ -187,6 +187,43 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 		LogError("No pueden haber 2 grafos con nombre %s", name);
 		programSuccess = false;
 	}
+	if (graphList->graphType == WHEEL) {
+		WheelGraph * w_graph = graph;
+		symbol_table_addNode(name, w_graph->center);
+		for (NodeList *node = w_graph->nodeList ; node ; node = node->next) {
+			int result = symbol_table_addNode(name, node->name);
+			if (result == NODE_ALREADY_EXISTS) {
+				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
+				programSuccess = false;
+			}
+		}
+	} else if (graphList->graphType == STAR) {
+		StarGraph * s_graph = graphList->graph;
+		symbol_table_addNode(name, s_graph->center);
+		for (NodeList *node = s_graph->nodeList ; node ; node = node->next) {
+			int result = symbol_table_addNode(name, node->name);
+			if (result == NODE_ALREADY_EXISTS) {
+				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
+				programSuccess = false;
+			}
+		}
+	} else if (graphList->graphType == BIPARTITE_COMPLETE) {
+		BipartiteCompleteGraph * b_graph = graphList->graph;
+		for (NodeList *node = b_graph->groupA ; node ; node = node->next) {
+			int result = symbol_table_addNode(name, node->name);
+			if (result == NODE_ALREADY_EXISTS) {
+				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
+				programSuccess = false;
+			}
+		}
+		for (NodeList *node = b_graph->groupB ; node ; node = node->next) {
+			int result = symbol_table_addNode(name, node->name);
+			if (result == NODE_ALREADY_EXISTS) {
+				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
+				programSuccess = false;
+			}
+		}
+	}
 	return block;
 }
 

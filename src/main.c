@@ -49,5 +49,6 @@ const int main(const int argumentCount, const char ** arguments) {
 			LogError("Error desconocido mientras se ejecutaba el analizador Bison (codigo %d).", result);
 	}
 	LogInfo("Fin.");
+	free_symbol_table();
 	return result;
 }

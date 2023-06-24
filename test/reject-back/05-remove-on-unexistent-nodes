@@ -3,4 +3,4 @@ Wheel Cgraph:
     nodes b, c, d
 
 remove from Cgraph:
-    nodes a
+    nodes e
