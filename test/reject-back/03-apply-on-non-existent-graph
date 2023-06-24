@@ -1,0 +1,10 @@
+BipartiteComplete graphAA:
+    group a, b, c, d
+    group e, f
+
+add to graphAA:
+    nodes a, b, c
+    edges a-b, c-d
+
+apply to graphA:
+    bfs from a to b > something

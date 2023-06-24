@@ -1,0 +1,9 @@
+Graph B
+
+add to A:
+    nodes aa, bb, cc
+    edges aa-bb, cc-dd
+
+remove from A:
+    nodes aa, bb, cc
+    edges aa-bb, cc-dd

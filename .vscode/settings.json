@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "abstract-syntax-tree.h": "c",
-        "generator.h": "c"
+        "generator.h": "c",
+        "symboltable.h": "c"
     }
 }

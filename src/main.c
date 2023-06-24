@@ -2,6 +2,8 @@
 #include "backend/support/logger.h"
 #include "backend/support/shared.h"
 #include "frontend/syntactic-analysis/bison-parser.h"
+#include "backend/semantic-analysis/symboltable.h"
+
 #include <stdio.h>
 
 // Estado de la aplicación.
@@ -21,12 +23,13 @@ const int main(const int argumentCount, const char ** arguments) {
 
 	// Compilar el programa de entrada.
 	LogInfo("Compilando...\n");
+	init_symbol_table();
 	const int result = yyparse();
 	switch (result) {
 		case 0:
 			// La variable "succeed" es la que setea Bison al identificar el símbolo
 			// inicial de la gramática satisfactoriamente.
-			if (state.succeed) {
+			if (state.succeed == true) {
 				LogInfo("La compilacion fue exitosa.");
 					// LogInfo("a ver %s", state.program->actions->graphName);
 				Generator(state.program);

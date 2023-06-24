@@ -1,0 +1,5 @@
+Graph duplicate
+
+add to duplicate:
+    nodes a, b, c, d, e, c, A
+    edges a-b, c-d, d-e

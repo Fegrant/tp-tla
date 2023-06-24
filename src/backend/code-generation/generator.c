@@ -16,16 +16,12 @@ void generateRemove(char *graphName, AddRemoveInstructionList *addList);
 
 void generateApply(char *graphName, ApplyInstructionList *applyList);
 
- FILE * fd;
+FILE * fd;
 
- int fileCounter = 0;
-
-// void Generator(Program *program) {
-// 	printf("a ver %s", program->actions->graphName);
-// }
+int fileCounter = 0;
 
 void Generator(Program *program) {
-	// TODO: Code generationp
+	// TODO: Code generation
 
 	const char *filename = "output.js";
 	fd = fopen(filename, "w+");
@@ -33,8 +29,6 @@ void Generator(Program *program) {
 	generateSetup();
 
 	BlockList *action = program->actions;
-
-	// LogDebug("\tFirst node: %s", ((CycleGraph*)((GraphList*)program->actions->block)->graph)->nodeList->next->name);
 
 	while (action != NULL)
 	{
@@ -57,9 +51,7 @@ void Generator(Program *program) {
 		}
 		action = action->next;
 	}
-
-
-
+	
 }
 
 void generateSetup() {

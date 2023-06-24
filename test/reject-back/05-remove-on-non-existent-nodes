@@ -1,0 +1,6 @@
+Wheel Cgraph:
+    center a
+    nodes b, c, d
+
+remove from Cgraph:
+    nodes a

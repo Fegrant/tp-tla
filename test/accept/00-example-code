@@ -5,9 +5,8 @@ add to A:
     edges c-4-d, b-2-c
 
 remove from A:
-    edges c-4-d
-    nodes b	/* Internamente también borra la arista b-c */
-
+    nodes b
+    edges c-d
 
 apply to A:
     bfs from c to d > hola

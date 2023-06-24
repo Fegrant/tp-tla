@@ -23,6 +23,8 @@ void yyerror(const char * string) {
 	LogErrorRaw("\n\n");
 }
 
+static int programSuccess = true;
+
 /**
 * Esta acción se corresponde con el no-terminal que representa el símbolo
 * inicial de la gramática, y por ende, es el último en ser ejecutado, lo que
@@ -38,7 +40,7 @@ BlockList * ProgramGrammarAction(BlockList * blockList) {
 	* cuyo campo "succeed" indica si la compilación fue o no exitosa, la cual
 	* es utilizada en la función "main".
 	*/
-	state.succeed = true;
+	state.succeed = programSuccess;
 	
 	/*
 	* Por otro lado, "result" contiene el resultado de aplicar el análisis
@@ -81,8 +83,12 @@ BlockList * BlockListGrammarAction(BlockList * blockList) {
 
 EdgeList * CreateWeightedEdgeGrammarAction(char * leftNode, char * rightNode, int weight) {
 	EdgeList * edge = calloc(1, sizeof(EdgeList));
-	edge->leftNode = leftNode;
-	edge->rightNode = rightNode;
+	NodeList * left = calloc(1, sizeof(NodeList));
+	NodeList * right = calloc(1, sizeof(NodeList));
+	left->name = leftNode;
+	right->name = rightNode;
+	edge->leftNode = left;
+	edge->rightNode = right;
 	edge->weight = weight;
 	return edge;
 }
@@ -177,6 +183,10 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 	block->block = graphList;
 	block->graphName = name;
 	block->type = GRAPH;
+	if (symbol_table_putGraph(name) == GRAPH_ALREADY_EXISTS) {
+		LogError("No pueden haber 2 grafos con nombre %s", name);
+		programSuccess = false;
+	}
 	return block;
 }
 
@@ -185,7 +195,8 @@ BlockList * CreateSimpleGraphGrammarAction(char * name) {
 }
 
 BlockList * CreateCycleGraphGrammarAction(char * name, Graph * graph) {
-	return CreateGraphGrammarAction(name, graph, CYCLE);
+	BlockList * toReturn = CreateGraphGrammarAction(name, graph, CYCLE);
+	return toReturn;
 }
 
 BlockList * CreateWheelGraphGrammarAction(char * name, Graph * graph) {
@@ -209,6 +220,133 @@ BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType
 	blockList->graphName = name;
 	blockList->block = block;
 	blockList->type = type;
+	if (!symbol_table_exists(name)) {		// Graph does not exist
+		LogError("No existe el grafo '%s' sobre el que se quiere operar", name);
+		programSuccess = false;
+	}
+	switch (type) {
+		case ADD_BLOCK: ;
+			AddRemoveInstructionList * addNodesEdgesList = blockList->block;
+			for (AddRemoveInstructionList * instruction = addNodesEdgesList ; instruction ; instruction = instruction->next) {
+				if (instruction->instructionType == NODE_LIST) {
+					for (NodeList *node = (NodeList*)instruction->addRemoveInstruction ; node ; node = node->next) {
+						int result = symbol_table_addNode(name, node->name);
+						if (result == NODE_ALREADY_EXISTS) {
+							LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
+							programSuccess = false;
+						} else if (result == GRAPH_NOT_EXISTS) {
+							LogError("El grafo '%s' sobre el que se quiere añadir el nodo '%s' no existe", name, node->name);
+							programSuccess = false;
+						}
+					}
+				} else if (instruction->instructionType == EDGE_LIST) {
+					for (EdgeList *edge = (EdgeList*)instruction->addRemoveInstruction ; edge ; edge = edge->next) {
+						NodeList* leftNode = edge->leftNode;
+						NodeList* rightNode = edge->rightNode;
+						int result = symbol_table_addEdge(name, leftNode->name, rightNode->name, edge->weight);
+						if (result == EDGE_ALREADY_EXISTS) {
+							LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", leftNode->name, rightNode->name, name);
+							programSuccess = false;
+						} else if (result == NODE_NOT_EXISTS) {
+							LogError("Un nodo de la arista '%s-%s' no existe en el grafo '%s'", leftNode->name, rightNode->name, name);
+							programSuccess = false;
+						} else if (result == GRAPH_NOT_EXISTS) {
+							LogError("El grafo '%s' sobre el que se quiere añadir la arista '%s-%s' no existe", name, (char*)leftNode->name, (char*)rightNode->name);
+							programSuccess = false;
+						}
+					}
+				}
+			}
+			break;
+		case REMOVE_BLOCK: ;
+			AddRemoveInstructionList * removeNodesEdgesList = blockList->block;
+			for (AddRemoveInstructionList * instruction = removeNodesEdgesList ; instruction ; instruction = instruction->next) {
+				if (instruction->instructionType == NODE_LIST) {
+					for (NodeList *node = (NodeList*)instruction->addRemoveInstruction ; node ; node = node->next) {
+						int result = symbol_table_removeNode(name, node->name);
+						if (result == NODE_NOT_EXISTS) {
+							LogError("El nodo a borrar '%s' no existe en el grafo '%s'", node->name, name);
+							programSuccess = false;
+						} else if (result == GRAPH_NOT_EXISTS) {
+							LogError("El grafo '%s' no existe", name);
+							programSuccess = false;
+						}
+					}
+				} else if (instruction->instructionType == EDGE_LIST) {
+					for (EdgeList *edge = (EdgeList*)instruction->addRemoveInstruction ; edge ; edge = edge->next) {
+						NodeList* leftNode = edge->leftNode;
+						NodeList* rightNode = edge->rightNode;
+						int result = symbol_table_removeEdge(name, leftNode->name, rightNode->name, edge->weight);
+						if (result == EDGE_NOT_EXISTS) {
+							LogError("La arista '%s-%s' a borrar no existe en el grafo '%s'", leftNode->name, rightNode->name, name);
+							programSuccess = false;
+						} else if (result == NODE_NOT_EXISTS) {
+							LogError("Un nodo de la arista '%s-%s' no existe en el grafo '%s'", leftNode->name, rightNode->name, name);
+							programSuccess = false;
+						} else if (result == GRAPH_NOT_EXISTS) {
+							LogError("El grafo '%s' sobre el que se quiere borrar la arista '%s-%s' no existe", name, leftNode->name, rightNode->name);
+							programSuccess = false;
+						}
+					}
+				}
+			}
+			break;
+		case APPLY_BLOCK: ;
+			ApplyInstructionList * instructionList = blockList->block;
+			for (ApplyInstructionList * instruction = instructionList ; instruction ; instruction = instruction->next ) {
+				if (instruction->instructionType == DFS_TYPE) {
+					char * from = ((DfsBlock*)instruction->applyInstruction)->from;
+					int fromResult = symbol_table_nodeExists(name, from);
+					if (fromResult == GRAPH_NOT_EXISTS) {
+						LogError("El grafo '%s' al que se le quiere aplicar DFS no existe", name);
+						programSuccess = false;
+					} else if (fromResult == NODE_NOT_EXISTS) {
+						LogError("El nodo '%s' del grafo '%s' desde el que se quiere hacer DFS no existe", from, name);
+						programSuccess = false;
+					}
+					char * to = ((DfsBlock*)instruction->applyInstruction)->to;
+					int toResult = symbol_table_nodeExists(name, to);
+					if (toResult == GRAPH_NOT_EXISTS) {
+						LogError("El grafo '%s' al que se le quiere aplicar DFS no existe", name);
+						programSuccess = false;
+					} else if (toResult == NODE_NOT_EXISTS) {
+						LogError("El nodo '%s' del grafo '%s' al que se quiere llegar con DFS no existe", to, name);
+						programSuccess = false;
+					}
+				} else if (instruction->instructionType == BFS_TYPE) {
+					char * from = ((BfsBlock*)instruction->applyInstruction)->from;
+					int fromResult = symbol_table_nodeExists(name, from);
+					if (fromResult == GRAPH_NOT_EXISTS) {
+						LogError("El grafo '%s' al que se le quiere aplicar DFS no existe", name);
+						programSuccess = false;
+					} else if (fromResult == NODE_NOT_EXISTS) {
+						LogError("El nodo '%s' del grafo '%s' desde el que se quiere hacer BFS no existe", from, name);
+						programSuccess = false;
+					}
+					char * to = ((BfsBlock*)instruction->applyInstruction)->to;
+					int toResult = symbol_table_nodeExists(name, to);
+					if (toResult == GRAPH_NOT_EXISTS) {
+						LogError("El grafo '%s' al que se le quiere aplicar DFS no existe", name);
+						programSuccess = false;
+					} else if (toResult == NODE_NOT_EXISTS) {
+						LogError("El nodo '%s' del grafo '%s' al que se quiere llegar con BFS no existe", to, name);
+						programSuccess = false;
+					}
+				} else if (instruction->instructionType == COLORS) {
+					NodeList *nodes = ((ColorList*)instruction->applyInstruction)->nodes;
+					for (NodeList *node = nodes ; node ; node = node->next) {
+						int result = symbol_table_nodeExists(name, node->name);
+						if(result == NODE_NOT_EXISTS) {
+							LogError("El nodo '%s' que se quiere colorear de %s no existe en el grafo %s", node->name, ((ColorList*)instruction->applyInstruction)->rgb, name);
+							programSuccess = false;
+						}
+					}
+				}
+			}
+			break;
+		default:
+			break;
+	}
 	return blockList;
 }
 
