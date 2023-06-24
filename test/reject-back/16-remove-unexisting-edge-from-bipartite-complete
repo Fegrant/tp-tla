@@ -1,0 +1,6 @@
+BipartiteComplete LastOne:
+    group a, b, c, d
+    group e, f, g, h
+
+remove from LastOne:
+    edges a-4-b

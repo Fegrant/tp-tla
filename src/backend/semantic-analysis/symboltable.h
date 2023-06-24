@@ -3,9 +3,6 @@
 
 #include "abstract-syntax-tree.h"
 
-// Deberiamos tener listas de nodos?
-// guardar las aristas
-
 typedef struct SymbolTableVariable {
     NodeList *nodesA;
     EdgeList *edgesA;

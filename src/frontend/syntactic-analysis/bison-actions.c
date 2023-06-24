@@ -187,15 +187,47 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 		LogError("No pueden haber 2 grafos con nombre %s", name);
 		programSuccess = false;
 	}
-	if (graphList->graphType == WHEEL) {
+	if (graphList->graphType == CYCLE) {
+		CycleGraph * c_graph = graph;
+		NodeList * last = NULL;
+		for (NodeList * node = c_graph->nodeList ; node ; node = node->next) {
+			int result = symbol_table_addNode(name, node->name);
+			if (result == NODE_ALREADY_EXISTS) {
+				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
+				programSuccess = false;				
+			}
+			if (last != NULL) {
+				result = symbol_table_addEdge(name, last->name, node->name, 1);
+				if (result == EDGE_ALREADY_EXISTS) {		// Maybe unreachable, but just in case
+					LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", last->name, node->name, name);
+					programSuccess = false;
+				}
+			}
+			last = node;
+		}
+	} else if (graphList->graphType == WHEEL) {
 		WheelGraph * w_graph = graph;
 		symbol_table_addNode(name, w_graph->center);
+		NodeList * last = NULL;
 		for (NodeList *node = w_graph->nodeList ; node ; node = node->next) {
 			int result = symbol_table_addNode(name, node->name);
 			if (result == NODE_ALREADY_EXISTS) {
 				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
 				programSuccess = false;
 			}
+			result = symbol_table_addEdge(name, w_graph->center, node->name, 1);
+			if (result == EDGE_ALREADY_EXISTS) {
+				LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", w_graph->center, node->name, name);
+				programSuccess = false;
+			}
+			if (last != NULL) {
+				result = symbol_table_addEdge(name, node->name, last->name, 1);
+				if (result == EDGE_ALREADY_EXISTS) {		// Maybe unreachable, but just in case
+					LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", w_graph->center, node->name, name);
+					programSuccess = false;
+				}
+			}
+			last = node;
 		}
 	} else if (graphList->graphType == STAR) {
 		StarGraph * s_graph = graphList->graph;
@@ -205,6 +237,27 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 			if (result == NODE_ALREADY_EXISTS) {
 				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
 				programSuccess = false;
+			}
+			result = symbol_table_addEdge(name, s_graph->center, node->name, 1);
+			if (result == EDGE_ALREADY_EXISTS) {
+				LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", s_graph->center, node->name, name);
+				programSuccess = false;
+			}
+		}
+	} else if (graphList->graphType == COMPLETE) {
+		CompleteGraph * k_graph = graphList->graph;
+		for (NodeList *node = k_graph ; node ; node=node->next) {
+			int result = symbol_table_addNode(name, node->name);
+			if (result == NODE_ALREADY_EXISTS) {
+				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
+				programSuccess = false;
+			}
+			for (NodeList *connected = node->next ; connected ; connected = connected->next) {
+				result = symbol_table_addEdge(name, node->name, connected->name, 1);
+				if (result == EDGE_ALREADY_EXISTS) {
+					LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", connected->name, node->name, name);
+					programSuccess = false;					
+				}
 			}
 		}
 	} else if (graphList->graphType == BIPARTITE_COMPLETE) {
@@ -221,6 +274,13 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 			if (result == NODE_ALREADY_EXISTS) {
 				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
 				programSuccess = false;
+			}
+			for (NodeList * groupANode = b_graph->groupA ; groupANode ; groupANode = groupANode->next) {
+				int result = symbol_table_addEdge(name, groupANode->name, node->name, 1);
+				if (result == EDGE_ALREADY_EXISTS) {
+					LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", groupANode->name, node->name, name);
+					programSuccess = false;
+				}
 			}
 		}
 	}
