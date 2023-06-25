@@ -26,29 +26,39 @@ void Generator(Program *program) {
 	generateSetup();
 
 	BlockList *action = program->actions;
+	BlockList *next;
 
 	while (action != NULL)
 	{
+		next = action->next;
 		switch (action->type)
 		{
 		case GRAPH:
 			generateGraph(action->graphName, (GraphList *) action->block);
+			freeGraph((GraphList *) action->block);
 			break;
 		case ADD_BLOCK:
 			generateAdd(action->graphName, (AddRemoveInstructionList *) action->block);
+			freeAddRemove((AddRemoveInstructionList *) action->block);
 			break;
 		case REMOVE_BLOCK:
 			generateRemove(action->graphName, (AddRemoveInstructionList *) action->block);
+			freeAddRemove((AddRemoveInstructionList *) action->block);
 			break;
 		case APPLY_BLOCK:
 			generateApply(action->graphName, (ApplyInstructionList *) action->block);
+			freeApply((ApplyInstructionList *) action->block);
 			break;
 		default:
 			break;
 		}
-		action = action->next;
+		if (action->graphName != NULL) {
+			free(action->graphName);
+		}
+		free(action);
+		action = next;
 	}
-
+	free(program);
 }
 
 void generateSetup() {

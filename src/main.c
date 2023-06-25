@@ -1,7 +1,7 @@
 #include "backend/code-generation/generator.h"
 #include "backend/support/logger.h"
 #include "backend/support/shared.h"
-#include "frontend/syntactic-analysis/bison-parser.h"
+#include "frontend/syntactic-analysis/bison-actions.h"
 #include "backend/semantic-analysis/symboltable.h"
 
 #include <stdio.h>
@@ -33,6 +33,7 @@ const int main(const int argumentCount, const char ** arguments) {
 				LogInfo("La compilacion fue exitosa.");
 					// LogInfo("a ver %s", state.program->actions->graphName);
 				Generator(state.program);
+				state.program = NULL;			
 			}
 			else {
 				LogError("Se produjo un error en la aplicacion.");
