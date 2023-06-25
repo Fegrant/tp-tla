@@ -23,7 +23,6 @@
 	BlockList * declaration;
 	BlockList * addBlockBegin;
 	BlockList * removeBlockBegin;
-	BlockList * outputGraph;
 	AddRemoveInstructionList * addRemoveBlock;
 	AddRemoveInstructionList * addRemoveBlockInstruction;
 	NodeList * nodeList;
@@ -110,8 +109,6 @@
 %type <nodeList> node
 %type <edgeList> edgeList
 
-%type <outputGraph> outputGraph
-
 %type <edge> edge
 %type <weightedEdge> weightedEdge
 
@@ -149,10 +146,6 @@ instruction: declaration												{ $$ = BlockListGrammarAction($1); }
 	| addBlockBegin														{ $$ = BlockListGrammarAction($1); }
 	| removeBlockBegin													{ $$ = BlockListGrammarAction($1); }
 	| applyBlockBegin													{ $$ = BlockListGrammarAction($1); }
-	| outputGraph														{ $$ = BlockListGrammarAction($1); }
-	;
-
-outputGraph: STRING GREATER STRING										{ $$ = CreateOutputGraphBlockGrammarAction($1, $3); }
 	;
 
 addBlockBegin: ADD TO STRING BEGIN_BLOCK addRemoveBlock					{ $$ = CreateAddBlockGrammarAction($3, $5); }

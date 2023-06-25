@@ -1,7 +1,6 @@
 #include "../support/logger.h"
 #include "generator.h"
 #include "../semantic-analysis/abstract-syntax-tree.h"
-#include <stdlib.h>
 
 /**
  * Implementación de "generator.h".
@@ -16,8 +15,6 @@ void generateAdd(char *graphName, AddRemoveInstructionList *addList);
 void generateRemove(char *graphName, AddRemoveInstructionList *addList);
 
 void generateApply(char *graphName, ApplyInstructionList *applyList);
-
-void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph);
 
 FILE * fd;
 
@@ -51,10 +48,6 @@ void Generator(Program *program) {
 		case APPLY_BLOCK:
 			generateApply(action->graphName, (ApplyInstructionList *) action->block);
 			freeApply((ApplyInstructionList *) action->block);
-			break;
-		case OUTPUT_GRAPH:
-			generateOutputGraph(action->graphName, (OutputGraphInstruction *) action->block);
-			freeOutputGraph((OutputGraphInstruction *) action->block);
 			break;
 		default:
 			break;
@@ -299,14 +292,5 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 					*/
 		fileCounter++;
 	}
-}
-
-void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph) {
-	fprintf(fd, "%s_pos = _nx.spring_layout(%s)\n", graphName, graphName);
-	fprintf(fd, "_nx.draw(%s, with_labels=True, font_weight='bold', node_color='white', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'), pos=%s_pos)\n", graphName, graphName);
-	fprintf(fd, "_nx.draw_networkx_edge_labels(%s, %s_pos, edge_labels=_nx.get_edge_attributes(%s, 'weight'))\n", graphName, graphName, graphName);
-	fprintf(fd, "plt.savefig('output/%s.png')\n", outputGraph->outputFile);
-	fprintf(fd, "plt.clf()\n\n");
-	fileCounter++;
 }
 

@@ -538,23 +538,6 @@ ApplyInstructionList * ApplyInstructionListGrammarAction(ApplyInstructionList * 
 	return instruction;
 }
 
-BlockList * CreateOutputGraphBlockGrammarAction(char *name, char *output) {
-
-	int toResult = symbol_table_exists(name);
-	if (!toResult) {
-		LogError("El grafo '%s' que se quiere exportar no existe", name);
-		programSuccess = false;
-	}
-
-	BlockList * block = calloc(1, sizeof(BlockList));
-	OutputGraphInstruction * instruction = calloc(1, sizeof(OutputGraphInstruction));
-	instruction->outputFile = output;
-	block->block = (Block *)instruction;
-	block->graphName = name;
-	block->type = OUTPUT_GRAPH;
-	return block;
-}
-
 ApplyInstructionList * AppendApplyBlockGrammarAction (ApplyInstructionList * instruction, ApplyInstructionList * list) {
 	instruction->next=list;
 	return instruction;

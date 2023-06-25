@@ -66,7 +66,7 @@ void freeAddRemove(AddRemoveInstructionList * list) {
             freeNodeList((NodeList *) list->addRemoveInstruction);
             break;
         case EDGE_LIST:
-            freeEdgeList((EdgeList *) list->addRemoveInstruction);
+            freeEdgeList((NodeList *) list->addRemoveInstruction);
             break;
         default:
             break;
@@ -124,16 +124,6 @@ void freeColors(ColorList * list) {
         }
         freeNodeList(list->nodes);
         free(list);
-    }
-    return;
-}
-
-void freeOutputGraph(OutputGraphInstruction * instruction) {
-    if (instruction != NULL) {
-        if (instruction->outputFile != NULL) {
-            free(instruction->outputFile);
-        }
-        free(instruction);
     }
     return;
 }
