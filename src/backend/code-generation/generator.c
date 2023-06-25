@@ -183,6 +183,8 @@ void generateRemove(char *graphName, AddRemoveInstructionList *addList) {
 void generateApply(char *graphName, ApplyInstructionList *applyList) {
 	for (ApplyInstructionList *instruction = applyList; instruction; instruction = instruction->next) {
 		char *varName = graphName;
+		int nodeColors = 0;
+		int edgeColors = 0;
 		switch (instruction->instructionType)
 		{
 		case BFS_TYPE: ;
@@ -196,6 +198,7 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 			fprintf(fd, "\t\t%s_edges_colors.append('red')\n", graphName);
 			fprintf(fd, "\telse:\n");
 			fprintf(fd, "\t\t%s_edges_colors.append('black')\n", graphName);
+			edgeColors = 1;
 			break;
 		case DFS_TYPE: ;
 			DfsBlock *dfs = (DfsBlock *)instruction->applyInstruction;
@@ -207,28 +210,31 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 			fprintf(fd, "\t\t%s_edges_colors.append('red')\n", graphName);
 			fprintf(fd, "\telse:\n");
 			fprintf(fd, "\t\t%s_edges_colors.append('black')\n", graphName);
+			edgeColors = 1;
 			break;
 		case COLORS: ;
-		/*
+		
 			ColorList *colors = (ColorList *)instruction->applyInstruction;
+			fprintf(fd, "node_colors = []\n");
+			fprintf(fd, "for node in %s.nodes:\n", graphName);
 			for (ColorList *aux = colors; aux; aux = aux->next) {
 				for (NodeList *node = aux->nodes; node; node = node->next) {
 					fprintf(fd, "%s.$('#%s').style('background-color', '%s');\n", graphName, node->name, aux->rgb);
+					fprintf(fd, "\tif %s.nodes[node]['name'] == '%s':\n", graphName, node->name);
+					fprintf(fd, "\t\tnode_colors.append('%s')\n", aux->rgb);
 				}
 			}
-			*/
+			nodeColors = 1;
 			break;
 		case FIND_CUT_NODES:
-		/*
-			fprintf(fd, "var cut = %s.elements().htb().cut;\n"
-			"cut.forEach(node => %s.$(node.id()).style('background-color', 'rgb(Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255))'));\n", graphName, graphName);
-			*/
+			fprintf(fd, "%s_cut = nx.minimum_node_cut(%s)\n"
+						"node_colors = ['red' if node in %s_cut else 'gray' for node in %s.nodes]", graphName, graphName, graphName, graphName);
+			nodeColors = 1;
 			break;
 		case DELETE_CUT_NODES:
-		/*
-			fprintf(fd, "var cutNodes = %s.elements().htb().cut;\n"
-			"cutNodes.forEach( node => %s.remove(node));\n", graphName, graphName);
-			*/
+			fprintf(fd, "%s_cut = nx.minimum_node_cut(%s)\n"
+						"for node in %s_cut:\n"
+						"\t%s.remove_node(node)\n", graphName, graphName, graphName, graphName);
 			break;
 		case MST_TYPE:
 			fprintf(fd, "%s_mst = _nx.minimum_spanning_tree(%s)\n", graphName, graphName);
@@ -239,6 +245,7 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 			fprintf(fd, "\t\t%s_edges_colors.append('red')\n", graphName);
 			fprintf(fd, "\telse:\n");
 			fprintf(fd, "\t\t%s_edges_colors.append('black')\n", graphName);
+			edgeColors = 1;
 		/*
 			fprintf(fd, "var mst = %s.elements().kruskal();\n", graphName);
 			varName = "mst";
@@ -248,7 +255,11 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 			break;
 		}
 		fprintf(fd, "%s_pos = _nx.spring_layout(%s)\n", graphName, graphName);
-		fprintf(fd, "_nx.draw(%s, with_labels=True, font_weight='bold', edge_color=%s_edges_colors, node_color='white', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'), pos=%s_pos)\n", graphName, graphName, graphName);
+		if (edgeColors) {
+			fprintf(fd, "_nx.draw(%s, with_labels=True, font_weight='bold', edge_color=%s_edges_colors, node_color=%s, bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'), pos=%s_pos)\n", graphName, graphName, nodeColors ? "node_colors" : "'white'", graphName);
+		} else {
+			fprintf(fd, "_nx.draw(%s, with_labels=True, font_weight='bold', node_color=%s, bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'), pos=%s_pos)\n", graphName, nodeColors ? "node_colors" : "'white'", graphName);
+		}
 		fprintf(fd, "_nx.draw_networkx_edge_labels(%s, %s_pos, edge_labels=_nx.get_edge_attributes(%s, 'weight'))\n", graphName, graphName, graphName);
 		char * outputFile = instruction->outputFile;
 		if (outputFile == NULL) {
