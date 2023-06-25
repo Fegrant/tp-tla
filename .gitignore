@@ -26,10 +26,12 @@
 hs_err_pid*
 
 # Generated files
+output
 bin
 src/frontend/lexical-analysis/flex-scanner.c
 src/frontend/syntactic-analysis/bison-parser.h
 src/frontend/syntactic-analysis/bison-parser.c
+*.py
 
 # Node
 node_modules

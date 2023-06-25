@@ -1,8 +1,8 @@
 Graph oneNode
 
 add to oneNode:
-    nodes only
-    edges only-3-only
+    nodes only, onlyOther
+    edges only-3-onlyOther, onlyOther-2-only
 
 apply to oneNode:
     bfs from only to only > outputA
