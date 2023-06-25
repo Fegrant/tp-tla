@@ -1,7 +1,7 @@
 #include "backend/code-generation/generator.h"
 #include "backend/support/logger.h"
 #include "backend/support/shared.h"
-#include "frontend/syntactic-analysis/bison-actions.h"
+#include "frontend/syntactic-analysis/bison-parser.h"
 #include "backend/semantic-analysis/symboltable.h"
 
 #include <stdio.h>
