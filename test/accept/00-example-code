@@ -1,19 +1,21 @@
 Graph A
 
 add to A:
-    nodes b, c, d, e, f
-    edges c-4-d, b-2-c
+    nodes a, b, c, d, e, f, g, h
+    edges a-b, a-d, b-c, b-d, b-f, c-e, c-f, d-e, e-g
 
 remove from A:
-    nodes b
-    edges c-d
+    nodes h
+    edges c-f
 
 apply to A:
-    bfs from c to d > hola
-    dfs from d to c > archivoA
+    bfs from a to g > bfsAtoG
+    dfs from b to e > dfsBtoE
+/*
     colors:
         #ff0000 e, d
         #00ff00 c, f
     find cut nodes
-    delete cut nodes > adios
-    mst
+    delete cut nodes
+*/
+    mst > mstA

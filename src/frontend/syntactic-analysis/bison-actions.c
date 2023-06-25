@@ -87,6 +87,10 @@ EdgeList * CreateWeightedEdgeGrammarAction(char * leftNode, char * rightNode, in
 	NodeList * right = calloc(1, sizeof(NodeList));
 	left->name = leftNode;
 	right->name = rightNode;
+	if (strcmp(leftNode, rightNode) == 0) {
+		LogError("No puede existir un lazo en el nodo '%s'", leftNode);
+		programSuccess = false;
+	}
 	edge->leftNode = left;
 	edge->rightNode = right;
 	edge->weight = weight;

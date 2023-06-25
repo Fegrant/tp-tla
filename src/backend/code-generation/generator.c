@@ -21,11 +21,8 @@ FILE * fd;
 int fileCounter = 0;
 
 void Generator(Program *program) {
-	// TODO: Code generation
-
-	const char *filename = "output.js";
+	const char *filename = "output.py";
 	fd = fopen(filename, "w+");
-
 	generateSetup();
 
 	BlockList *action = program->actions;
@@ -51,24 +48,23 @@ void Generator(Program *program) {
 		}
 		action = action->next;
 	}
-	
+
 }
 
 void generateSetup() {
-	fprintf(fd, "const cytoscape = require('cytoscape');\n");
-	fprintf(fd, "const cytosnap = require('cytosnap');\n");
-	fprintf(fd, "cytosnap.use(['cytoscape-dagre', 'cytoscape-cose-bilkent']);\n");
-	fprintf(fd, "const cytosnapOptions = {format: 'png', width: 1000, height: 1000, background: 'white'}\n");
-	fprintf(fd, "var snap = cytosnap(cytoscape, cytosnapOptions);\n");
+	fprintf(fd, "import matplotlib.pyplot as plt\n");
+	fprintf(fd, "import networkx as _nx\n\n");
+	fprintf(fd, "import os\n\n");
+	fprintf(fd, "if not os.path.exists('output'):\n");
+	fprintf(fd, "\tos.makedirs('output')\n\n");
 }
 
 void generateGraph(char *graphName, GraphList * graph) {
-	fprintf(fd, "var %s = cytoscape({ elements:	[", graphName);
+	fprintf(fd, "%s = _nx.Graph()\n", graphName);
 
 	NodeList *a = NULL;
 	char *center = NULL;
 	NodeList *b = NULL;
-
 
 	switch (graph->graphType) {
 		case CYCLE:
@@ -96,36 +92,45 @@ void generateGraph(char *graphName, GraphList * graph) {
 
 	NodeList *aux;
 	
+	if (graph->graphType != SIMPLE) {
+		fprintf(fd, "%s.add_nodes_from([", graphName);
+	}
+
 	for (NodeList *aux = a; aux != NULL; aux = aux->next) {
-		fprintf(fd, "{ data: { id: '%s' } },", aux->name);
+		fprintf(fd, "'%s', ", aux->name);
 	}
 
 	if (center != NULL) {
-		fprintf(fd, "{ data: { id: '%s' } },", center);
+		fprintf(fd, "'%s', ", center);
 	}
 
 	for (NodeList *aux = b; aux != NULL; aux = aux->next) {
-		fprintf(fd, "{ data: { id: '%s' } },", aux->name);
+		fprintf(fd, "'%s', ", aux->name);
+	}
+
+	if (graph->graphType != SIMPLE) {
+		fprintf(fd, "])\n");
+		fprintf(fd, "%s.add_weighted_edges_from([", graphName);
 	}
 
 	switch (graph->graphType) {
 		case STAR:
 		case WHEEL:
 			for (aux = a; aux; aux = aux->next) {
-				fprintf(fd, "{ data: { id:%s-1-%s , source: '%s', target: '%s' } },", aux->name, center , aux->name, center);
+				fprintf(fd, "('%s', '%s', %d), ", aux->name, center, 1);
 			}
 			if (graph->graphType == STAR)
 				break;
 		case CYCLE:
 			for (aux = a; aux->next != NULL; aux = aux->next) {
-				fprintf(fd, "{ data: { id:%s-1-%s , source: '%s', target: '%s' } },", aux->name, aux->next->name ,aux->name, aux->next->name);
+				fprintf(fd, "('%s', '%s', %d), ", aux->name, aux->next->name, 1);
 			}
-			fprintf(fd, "{ data: { id:%s-1-%s , source: '%s', target: '%s' } },", aux->name, a->name ,aux->name, a->name);
+			fprintf(fd, "('%s', '%s', %d), ", aux->name, a->name, 1);
 			break;
 		case COMPLETE:
 			for (aux = a; aux; aux = aux->next) {
 				for (NodeList *aux2 = aux->next; aux2; aux2 = aux2->next) {
-					fprintf(fd, "{ data: { source: '%s', target: '%s' } },", aux->name, aux2->name);
+					fprintf(fd, "('%s', '%s', %d), ", aux->name, aux2->name, 1);
 				}
 			}
 			break;
@@ -134,44 +139,45 @@ void generateGraph(char *graphName, GraphList * graph) {
 			break;
 	}
 
-	fprintf(fd, "]});\n");
-	
+	if (graph->graphType != SIMPLE) {
+		fprintf(fd, "])\n");
+	}
 }
 
 void generateAdd(char *graphName, AddRemoveInstructionList *addList) {
-	fprintf(fd, "%s.add([", graphName);
-
 	for (AddRemoveInstructionList * aux = addList; aux != NULL; aux = aux->next) {
 		if (aux->instructionType == NODE_LIST) {
+			fprintf(fd, "%s.add_nodes_from([", graphName);
 			for (NodeList *node = (NodeList *)aux->addRemoveInstruction; node; node = node->next) {
-				fprintf(fd, "{ data: { id: '%s' } },", node->name);
+				fprintf(fd, "'%s', ", node->name);
 			}
+			fprintf(fd, "])\n");
 		} else if (aux->instructionType == EDGE_LIST) {
+			fprintf(fd, "%s.add_weighted_edges_from([", graphName);
 			for (EdgeList *aux2 = (EdgeList *)aux->addRemoveInstruction; aux2; aux2 = aux2->next) {
-				fprintf(fd, "{ data: { id: '%s-%d-%s', source: '%s', target: '%s', weight: %d } },", aux2->leftNode, aux2->weight ,aux2->rightNode, aux2->leftNode, aux2->rightNode, aux2->weight);
+				fprintf(fd, "('%s', '%s', %d), ", ((NodeList*)aux2->leftNode)->name, ((NodeList*)aux2->rightNode)->name, aux2->weight);
 			}
+			fprintf(fd, "])\n");
 		}
-	}
-
-	fprintf(fd, "]);\n");		
+	}	
 }
 
 void generateRemove(char *graphName, AddRemoveInstructionList *addList) {
-	fprintf(fd, "%s.remove(%s.$().filter([", graphName, graphName);
-
 	for (AddRemoveInstructionList *aux = addList; aux; aux = aux->next) {
 		if (aux->instructionType == NODE_LIST) {
+			fprintf(fd, "%s.remove_nodes_from([", graphName);
 			for (NodeList *node = (NodeList *)aux->addRemoveInstruction; node; node = node->next) {
-				fprintf(fd, "'#%s',", node->name);
+				fprintf(fd, "'%s', ", node->name);
 			}
+			fprintf(fd, "])\n");
 		} else if (aux->instructionType == EDGE_LIST) {
+			fprintf(fd, "%s.remove_edges_from([", graphName);
 			for (EdgeList *aux2 = (EdgeList *)aux->addRemoveInstruction; aux2; aux2 = aux2->next) {
-				fprintf(fd, "'#%s-%d-%s',", aux2->leftNode, aux2->weight ,aux2->rightNode);
+				fprintf(fd, "('%s', '%s'), ", ((NodeList*)aux2->leftNode)->name, ((NodeList*)aux2->rightNode)->name);
 			}
+			fprintf(fd, "])\n");
 		}
 	}
-
-	fprintf(fd, "]));\n");
 }
 
 void generateApply(char *graphName, ApplyInstructionList *applyList) {
@@ -181,41 +187,77 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 		{
 		case BFS_TYPE: ;
 			BfsBlock *bfs = (BfsBlock *)instruction->applyInstruction;
-			fprintf(fd, "var bfs = %s.elements().bfs({ roots: '%s', "
-			"visit: function(v,e,u,i,depth){ if (v.data('id') === '%s') return true; }});\n"
-			"bfs.path.style('background-color', 'red');\n"
-			"bfs.found.style('background-color', 'red');\n", graphName, bfs->from, bfs->to);
+			fprintf(fd, "%s_bfs_tree = _nx.bfs_tree(%s, '%s')\n", graphName, graphName, bfs->from);
+			// fprintf(fd, "%s_bfs_edges = list(nx.utils.pairwise(nx.shortest_path(%s_bfs_tree, '%s', '%s')))\n", graphName, graphName, bfs->from, bfs->to);
+			fprintf(fd, "%s_bfs_edges = [tuple(sorted(edge)) for edge in _nx.utils.pairwise(_nx.shortest_path(%s_bfs_tree, '%s', '%s'))]\n", graphName, graphName, bfs->from, bfs->to);
+			fprintf(fd, "%s_edges_colors = []\n", graphName);
+			fprintf(fd, "for edge in %s.edges:\n", graphName);
+			fprintf(fd, "\tif edge in %s_bfs_edges:\n", graphName);
+			fprintf(fd, "\t\t%s_edges_colors.append('red')\n", graphName);
+			fprintf(fd, "\telse:\n");
+			fprintf(fd, "\t\t%s_edges_colors.append('black')\n", graphName);
 			break;
 		case DFS_TYPE: ;
 			DfsBlock *dfs = (DfsBlock *)instruction->applyInstruction;
-			fprintf(fd, "var dfs = %s.elements().dfs({ roots: '%s', "
-			"visit: function(v, e, u, i, depth){ if (v.data('id') === '%s') return true; }});\n"
-			"dfs.path.style('background-color', 'red');\n"
-			"dfs.found.style('background-color', 'red');\n", graphName, bfs->from, bfs->to);
+			fprintf(fd, "%s_dfs_tree = _nx.dfs_tree(%s, '%s')\n", graphName, graphName, dfs->from);
+			fprintf(fd, "%s_dfs_edges = [tuple(sorted(edge)) for edge in _nx.utils.pairwise(_nx.shortest_path(%s_dfs_tree, '%s', '%s'))]\n", graphName, graphName, dfs->from, dfs->to);
+			fprintf(fd, "%s_edges_colors = []\n", graphName);
+			fprintf(fd, "for edge in %s.edges:\n", graphName);
+			fprintf(fd, "\tif edge in %s_dfs_edges:\n", graphName);
+			fprintf(fd, "\t\t%s_edges_colors.append('red')\n", graphName);
+			fprintf(fd, "\telse:\n");
+			fprintf(fd, "\t\t%s_edges_colors.append('black')\n", graphName);
 			break;
 		case COLORS: ;
+		/*
 			ColorList *colors = (ColorList *)instruction->applyInstruction;
 			for (ColorList *aux = colors; aux; aux = aux->next) {
 				for (NodeList *node = aux->nodes; node; node = node->next) {
 					fprintf(fd, "%s.$('#%s').style('background-color', '%s');\n", graphName, node->name, aux->rgb);
 				}
 			}
+			*/
 			break;
 		case FIND_CUT_NODES:
+		/*
 			fprintf(fd, "var cut = %s.elements().htb().cut;\n"
 			"cut.forEach(node => %s.$(node.id()).style('background-color', 'rgb(Math.floor(Math.random() * 255), Math.floor(Math.random() * 255), Math.floor(Math.random() * 255))'));\n", graphName, graphName);
+			*/
 			break;
 		case DELETE_CUT_NODES:
+		/*
 			fprintf(fd, "var cutNodes = %s.elements().htb().cut;\n"
 			"cutNodes.forEach( node => %s.remove(node));\n", graphName, graphName);
+			*/
 			break;
 		case MST_TYPE:
+			fprintf(fd, "%s_mst = _nx.minimum_spanning_tree(%s)\n", graphName, graphName);
+			fprintf(fd, "%s_mst_edges = [tuple(sorted([edge[0], edge[1]])) for edge in %s_mst.edges(data=True)]\n", graphName, graphName);
+			fprintf(fd, "%s_edges_colors = []\n", graphName);
+			fprintf(fd, "for edge in %s.edges:\n", graphName);
+			fprintf(fd, "\tif edge in %s_mst_edges:\n", graphName);
+			fprintf(fd, "\t\t%s_edges_colors.append('red')\n", graphName);
+			fprintf(fd, "\telse:\n");
+			fprintf(fd, "\t\t%s_edges_colors.append('black')\n", graphName);
+		/*
 			fprintf(fd, "var mst = %s.elements().kruskal();\n", graphName);
 			varName = "mst";
+			*/
 			break;
 		default:
 			break;
 		}
+		fprintf(fd, "%s_pos = _nx.spring_layout(%s)\n", graphName, graphName);
+		fprintf(fd, "_nx.draw(%s, with_labels=True, font_weight='bold', edge_color=%s_edges_colors, node_color='white', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'), pos=%s_pos)\n", graphName, graphName, graphName);
+		fprintf(fd, "_nx.draw_networkx_edge_labels(%s, %s_pos, edge_labels=_nx.get_edge_attributes(%s, 'weight'))\n", graphName, graphName, graphName);
+		char * outputFile = instruction->outputFile;
+		if (outputFile == NULL) {
+			outputFile = graphName;
+		}
+		fprintf(fd, "plt.savefig('output/%s.png')\n", outputFile);
+		fprintf(fd, "plt.clf()\n\n");
+		// fprintf(fd, "plt.savefig('%s.png')\n", graphName);
+		/*
 		fprintf(fd, "snap.start().then(() => {\n"
 					"	%s.png({full: true}).then((data) => {\n"
   					"		const fs = require('fs');\n"
@@ -226,6 +268,7 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 					"		});\n"
 					"	});\n"
 					"});\n", varName, graphName, fileCounter, graphName, graphName, fileCounter);
+					*/
 		fileCounter++;
 	}
 }

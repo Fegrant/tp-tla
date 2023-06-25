@@ -2,6 +2,7 @@
     "files.associations": {
         "abstract-syntax-tree.h": "c",
         "generator.h": "c",
-        "symboltable.h": "c"
+        "symboltable.h": "c",
+        "00-example-code": "c"
     }
 }
