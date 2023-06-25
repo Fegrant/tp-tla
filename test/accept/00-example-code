@@ -14,6 +14,6 @@ apply to A:
     colors:
         #ff0000 e, d
         #00ff00 c, f
-    find cut nodes
-    delete cut nodes
+    find cut nodes > cutNodesA
+    delete cut nodes > deletedCutNodesA
     mst > mstA

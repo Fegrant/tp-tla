@@ -26,6 +26,7 @@
 hs_err_pid*
 
 # Generated files
+.vscode
 output
 bin
 src/frontend/lexical-analysis/flex-scanner.c

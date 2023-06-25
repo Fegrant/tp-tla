@@ -17,3 +17,6 @@ Complete allLettersWithoutNumbers:
 BipartiteComplete LastOne:
     group a, b, c, d
     group e, f
+
+apply to anotherGraph:
+    find cut nodes
