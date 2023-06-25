@@ -22,6 +22,7 @@ digit           [0-9]
 endline			[\n]
 whitespace		[ \f\n\r\t\v]
 letter          [a-zA-Z]
+letterOrNumber  [a-zA-Z0-9]
 
 %%
 
@@ -64,7 +65,7 @@ letter          [a-zA-Z]
 {color}                                     { return ColorPatternAction(yytext, yyleng); }
 {digit}+                                    { return DigitsPatternAction(yytext, yyleng); }
 {whitespace}								{ IgnoredPatternAction(yytext, yyleng); }
-{letter}+                                   { return StringPatternAction(yytext, yyleng); }
+{letterOrNumber}+                                   { return StringPatternAction(yytext, yyleng); }
 
 .											{ return UnknownPatternAction(yytext, yyleng); }
 

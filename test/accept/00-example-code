@@ -1,8 +1,12 @@
 Graph A
 
+A > A1
+
 add to A:
     nodes a, b, c, d, e, f, g, h
     edges a-b, a-d, b-c, b-d, b-f, c-e, c-f, d-e, e-g
+
+A > Asecond
 
 remove from A:
     nodes h
