@@ -1,4 +1,3 @@
-#include "../../backend/domain-specific/calculator.h"
 #include "../../backend/support/logger.h"
 #include "bison-actions.h"
 #include <stdio.h>
@@ -62,15 +61,6 @@ BlockList * AppendProgramGrammarAction (BlockList * declaration, BlockList * blo
 	declaration->next = blockList;
 	return ProgramGrammarAction(declaration);
 }
-
-// int Ack() {
-// 	return 0;
-// }
-
-// int AdditionExpressionGrammarAction(const int leftValue, const int rightValue) {
-// 	LogDebug("\tAdditionExpressionGrammarAction(%d, %d)", leftValue, rightValue);
-// 	return Add(leftValue, rightValue);
-// }
 
 BlockList * AppendBlockListGrammarAction(BlockList * block, BlockList * list) {
 	block->next = list;
@@ -546,23 +536,3 @@ ApplyInstructionList * AppendApplyBlockGrammarAction (ApplyInstructionList * ins
 ApplyInstructionList * ApplyBlockGrammarAction (ApplyInstructionList * list) {
 	return list;
 }
-
-// expression: expression[left] ADD expression[right] { $$ = AdditionExpressionGrammarAction($left, $right); }
-
-// int InstructionBlockGrammarAction(int instruction, int block) {
-// 	LogDebug("InstructionBlockGrammarAction ");
-// 	int toReturn = malloc(sizeof(Block));
-// 	toReturn->type = INSTRUCTION_BLOCK;
-// 	toReturn->block = block;
-// 	toReturn->instruction = instruction;
-// 	return toReturn;
-// }
-
-// int BlockGrammarAction(int instruction) {
-// 	LogDebug("BlockGrammarAction ");
-// 	Block * toReturn = malloc(sizeof(Block));
-// 	toReturn->type = INSTRUCTION;
-// 	toReturn->block = NULL;
-// 	toReturn->instruction = instruction;
-// 	return toReturn;
-// }

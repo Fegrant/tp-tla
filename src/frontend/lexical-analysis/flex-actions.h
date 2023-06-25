@@ -2,7 +2,7 @@
 #define FLEX_ACTIONS_HEADER
 
 #include "../../backend/support/shared.h"
-#include "../syntactic-analysis/bison-actions.h"
+#include "../syntactic-analysis/bison-parser.h"
 
 /**
  * Se definen las acciones a ejecutar sobre cada patrón hallado mediante el

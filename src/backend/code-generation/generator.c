@@ -1,6 +1,6 @@
 #include "../support/logger.h"
+#include "free_program.h"
 #include "generator.h"
-#include "../semantic-analysis/abstract-syntax-tree.h"
 
 /**
  * Implementación de "generator.h".
@@ -223,7 +223,6 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 			edgeColors = 1;
 			break;
 		case COLORS: ;
-		
 			ColorList *colors = (ColorList *)instruction->applyInstruction;
 			fprintf(fd, "node_colors = []\n");
 			fprintf(fd, "for node in %s.nodes:\n", graphName);

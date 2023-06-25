@@ -11,11 +11,9 @@ remove from A:
 apply to A:
     bfs from a to g > bfsAtoG
     dfs from b to e > dfsBtoE
-/*
     colors:
         #ff0000 e, d
         #00ff00 c, f
     find cut nodes
     delete cut nodes
-*/
     mst > mstA

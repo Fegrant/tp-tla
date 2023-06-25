@@ -1,5 +1,4 @@
-#include <stdlib.h>
-#include "generator.h"
+#include "free_program.h"
 
 void freeGraph(GraphList * graph) {
     switch(graph->graphType) {
@@ -27,6 +26,7 @@ void freeGraph(GraphList * graph) {
             break;
         case SIMPLE:
         default:
+            break;
     }
     free(graph->graph);
     free(graph);
@@ -66,7 +66,7 @@ void freeAddRemove(AddRemoveInstructionList * list) {
             freeNodeList((NodeList *) list->addRemoveInstruction);
             break;
         case EDGE_LIST:
-            freeEdgeList((NodeList *) list->addRemoveInstruction);
+            freeEdgeList((EdgeList *) list->addRemoveInstruction);
             break;
         default:
             break;

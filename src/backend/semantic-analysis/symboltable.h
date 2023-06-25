@@ -1,7 +1,7 @@
 #ifndef SYMBOLTABLE_H_
 #define SYMBOLTABLE_H_
 
-#include "abstract-syntax-tree.h"
+#include "../domain-specific/graphs.h"
 
 typedef struct SymbolTableVariable {
     NodeList *nodesA;

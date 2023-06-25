@@ -1,6 +1,8 @@
 #ifndef ABSTRACT_SYNTAX_TREE_HEADER
 #define ABSTRACT_SYNTAX_TREE_HEADER
 
+#include "../domain-specific/graphs.h"
+
 /**
 * Se realiza este tipo de definiciones cuando el tipo de dato debe
 * auto-referenciarse, como es el caso de una "Expression", que está compuesta
@@ -27,18 +29,6 @@ typedef struct {
 */
 
 /************************** GRAPH **********************************/
-typedef struct NodeList {
-	char * name;
-	struct NodeList * next;
-} NodeList;
-
-typedef struct EdgeList {
-	char * leftNode;
-	char * rightNode;
-	int weight;
-	struct EdgeList * next;
-} EdgeList;
-
 typedef struct CycleGraph {
 	struct NodeList * nodeList;
 } CycleGraph;
