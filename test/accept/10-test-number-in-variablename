@@ -1,0 +1,51 @@
+Graph A12
+
+add to A12:
+    nodes a, b, c, d, e, f, g, h
+    edges a-b, a-d, b-c, b-d, b-f, c-e, c-f, d-e, e-g
+
+A12 > outputAfterAdd
+
+remove from A12:
+    nodes h
+    edges c-f
+
+A12 > outputAfterRemove
+
+apply to A12:
+    bfs from a to g > bfsAtoG
+    dfs from b to e > dfsBtoE
+    colors:
+        #ff0000 e, d
+        #00ff00 c, f
+    mst > mstA
+    find cut nodes > cutNodesA
+    delete cut nodes > deletedCutNodesA
+
+A12 > outputAfterEverything
+
+Graph A13
+
+add to A13:
+    nodes a, b, c, d, e, f, g, h
+    edges a-b, a-d, b-c, b-d, b-f, c-e, c-f, d-e, e-g
+
+A13 > outputAfterAdd2
+
+remove from A13:
+    nodes h
+    edges c-f
+
+A13 > outputAfterRemove2
+
+apply to A13:
+    bfs from a to g > bfsAtoG2
+    dfs from b to e > dfsBtoE2
+    colors:
+        #ff0000 e, d
+        #00ff00 c, f
+    mst > mstA2
+    find cut nodes > cutNodesA2
+    delete cut nodes > deletedCutNodesA2
+
+A13 > outputAfterEverything2
