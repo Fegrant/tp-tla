@@ -6,11 +6,14 @@ Un compilador donde un usuario puede especificar un tipo de grafo, aplicarle ope
 
 Para construir el compilador, se requieren las siguientes dependencias:
 
-* [Bison v3.8.2](https://www.gnu.org/software/bison/)
-* [CMake v3.24.1](https://cmake.org/)
-* [Flex v2.6.4](https://github.com/westes/flex)
-* [GCC v11.1.0](https://gcc.gnu.org/)
-* [Make v4.3](https://www.gnu.org/software/make/)
+- [Bison v3.8.2](https://www.gnu.org/software/bison/)
+- [CMake v3.24.1](https://cmake.org/)
+- [Flex v2.6.4](https://github.com/westes/flex)
+- [GCC v11.1.0](https://gcc.gnu.org/)
+- [Make v4.3](https://www.gnu.org/software/make/)
+- [Python v3.11](https://www.python.org/downloads/release/python-3114/)
+- [NetworkX v3.1](https://pypi.org/project/networkx/)
+- [Matplotlib v3.7](https://matplotlib.org/3.7.1/index.html)
 
 Si en lugar de trabajar con un entorno _Linux_, se está construyendo el proyecto sobre un entorno _Microsoft Windows_, se debe instalar _Microsoft Visual Studio 2022_ con las extensiones para desarrollar aplicaciones en _C/C++_, así como también las herramientas requeridas, con excepción del compilador _GCC_ y la herramienta _Make_.
 
@@ -20,7 +23,7 @@ Un programa consta de varios bloques de operaciones o declaraciones de grafos, d
 
 ### Declaración de variables
 
-Primero vemos los tipos de grafos existentes, donde un usuario puede declarar un grafo vacío, o alguno de un tipo predefinido (como un Kconexo o *Complete*). Estos tipos pueden ser:
+Primero vemos los tipos de grafos existentes, donde un usuario puede declarar un grafo vacío, o alguno de un tipo predefinido (como un Kconexo o _Complete_). Estos tipos pueden ser:
 
 ```c
 Graph simple        /* Grafo simple, sin contenido inicial */
@@ -48,7 +51,7 @@ Por otro lado, como se puede ver, los nombres de nodos y de grafos son strings y
 
 ### Palabras reservadas
 
-Estos nombres tienen el limitante de que, actualmente, **SÓLO** pueden ser compuestos por letras, sin números, guiones o demás caracteres especiales, además que dichos nombres no deben coincidir con las *palabras reservadas* del lenguaje destinadas a otros comandos. Algunas son:
+Estos nombres tienen el limitante de que, actualmente, **SÓLO** pueden ser compuestos por letras, sin números, guiones o demás caracteres especiales, además que dichos nombres no deben coincidir con las _palabras reservadas_ del lenguaje destinadas a otros comandos. Algunas son:
 
 ```c
 colors
@@ -56,11 +59,11 @@ to
 mst
 ```
 
-Luego hay otras como *nodes* o *Graph* que podrían ser usadas como nombres de variables, siempre y cuando no sean seguidas por un espacio, donde el compilador puede detectar dicha acción como el inicio de una lista de nodos o declaración correspondiente.
+Luego hay otras como _nodes_ o _Graph_ que podrían ser usadas como nombres de variables, siempre y cuando no sean seguidas por un espacio, donde el compilador puede detectar dicha acción como el inicio de una lista de nodos o declaración correspondiente.
 
 ### Bloques add y remove
 
-Luego, para operar con los grafos creados tenemos los antes mencionados bloques, que en la versión actual del lenguaje son 3: **add *(add to graph)***, **remove *(remove from graph)*** y **apply *(apply to graph)***.
+Luego, para operar con los grafos creados tenemos los antes mencionados bloques, que en la versión actual del lenguaje son 3: **add _(add to graph)_**, **remove _(remove from graph)_** y **apply _(apply to graph)_**.
 
 Primero nos concentramos en **add** y **remove**, que tienen un comportamiento similar, donde en cada uno podemos agregar o quitar nodos o aristas de un grafo, que son pasados como listas de nodos o aristas, listados de la siguiente forma:
 
