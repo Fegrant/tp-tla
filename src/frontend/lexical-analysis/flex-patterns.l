@@ -21,7 +21,7 @@ color           #[0-9a-fA-F]{6}
 digit           [0-9]
 endline			[\n]
 whitespace		[ \f\n\r\t\v]
-letter          [a-zA-Z]
+letter          [a-zA-Z0-9]
 
 %%
 

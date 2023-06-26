@@ -152,6 +152,7 @@ instruction: outputGraph												{ $$ = BlockListGrammarAction($1); }
 	;
 
 outputGraph: STRING GREATER STRING										{ $$ = CreateOutputGraphBlockGrammarAction($1, $3); }
+	| STRING GREATER 													{ $$ = CreateOutputGraphBlockGrammarAction($1, $1); }
 	;
 
 addBlockBegin: ADD TO STRING BEGIN_BLOCK addRemoveBlock					{ $$ = CreateAddBlockGrammarAction($3, $5); }

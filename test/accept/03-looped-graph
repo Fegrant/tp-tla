@@ -3,3 +3,5 @@ Graph looped
 add to looped:
     nodes a, b, c
     edges a-b, b-c, c-a
+
+looped > looped

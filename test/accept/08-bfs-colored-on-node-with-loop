@@ -1,0 +1,11 @@
+Graph oneNode
+
+add to oneNode:
+    nodes only, onlyOther, onlyOtherr
+    edges only-3-onlyOther, onlyOther-4-onlyOtherr, onlyOtherr-5-only
+
+apply to oneNode:
+    colors:
+        #ab057f only
+        #765478 onlyOther
+    bfs from only to onlyOther > bfsOneNode

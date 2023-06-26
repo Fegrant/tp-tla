@@ -6,3 +6,10 @@ add to kConnected:
     edges b-c, b-d, b-e
     edges c-d, c-e
     edges d-e
+
+kConnected > kV
+
+remove from kConnected:
+    nodes a
+
+kConnected > kIV

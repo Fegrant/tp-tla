@@ -4,5 +4,9 @@ add to cutGraph:
     nodes a, b, c, d, e
     edges a-b, a-3-c, b-4-c, d-4-c, e-5-c
 
+cutGraph > beforeCut
+
 remove from cutGraph:
     nodes c
+
+cutGraph > afterCut

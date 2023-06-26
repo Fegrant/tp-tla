@@ -81,7 +81,7 @@ Luego, el borrado de nodos tendría en cuenta sus aristas, por lo que la acción
 
 ### Bloque apply
 
-Por último tenemos el bloque **apply**, donde se pueden aplicarle distintos algoritmos al grafo generado y visualizarlos en un archivo de salida de nombre especificado. Dicha redirección se indica con el caracter '>', donde el nombre de archivo actualmente tiene la misma restricción de las variables, al sólo poder ser compuesto por letras.
+Luego tenemos el bloque **apply**, donde se pueden aplicarle distintos algoritmos al grafo generado y visualizarlos en un archivo de salida de nombre especificado. Dicha redirección se indica con el caracter '>', donde el nombre de archivo actualmente tiene la misma restricción de las variables, al sólo poder ser compuesto por letras.
 
 Un ejemplo de este bloque, con todas las operaciones posibles, es:
 
@@ -105,6 +105,26 @@ Como se puede ver no es obligatorio que el resultado de cada algoritmo derive en
 
 Por último, cabe destacar que, a pesar de que el primer 'bloque' siempre debe ser una declaración, los siguientes bloques pueden ir en cualquier orden, teniendo en cuenta que funcionalmente puede que el programa sea incorrecto, mas no aún sintácticamente.
 
+### Bloque output
+
+Por último, tenemos un bloque con una única operación, la de _output_ o redirección, que hace que se genere una imagen con el estado actual del grafo teniendo en cuenta las operaciones previamente aplicadas. El nombre del archivo es un parámetro opcional, donde si no se lo indica, el archivo tendrá el nombre del grafo.
+
+```c
+Cycle BB:
+    nodes a, b, c, d, e
+
+BB >                /* El archivo de salida será el ciclo, y se llamará BB.png */
+
+apply to BB:
+    colors:
+        #ff0000 a, b, c
+
+BB > coloredBB      /* El archivo de salida tendrá a, b y c coloreados, y se llamará BB.png */
+
+```
+
+Esto puede ser muy útil cuando simplemente se desea ver un grafo luego de quitarle algún nodo o arista, o hasta luego de colorearlo. De todas maneras, se debe tener cuidado, ya que las imágenes se sobreescriben si existía alguna anterior, siendo la restante la última generada con dicho nombre durante la ejecución el programa.
+
 ## Construcción
 
 Para construir el proyecto por completo, ejecute en la raíz del repositorio los siguientes comandos (en _Linux_):
@@ -122,6 +142,8 @@ user@machine:path/ $ script\build.bat
 
 Luego se deberá abrir la solución generada `bin\Compiler.sln` con el IDE _Microsoft Visual Studio 2022_. Los ejecutables que este sistema construye se depositan dentro del directorio `bin\Debug` y `bin\Release`, según corresponda.
 
+Adicionalmente, puede que sea necesario borrar archivos de caché como `bin\CMakeCache.txt` en caso de querer usar el mismo código en otra carpeta.
+
 ## Ejecución
 
 Para compilar un programa, primero cree un archivo vacío denominado `program` (o el nombre que desee), con el siguiente contenido:
@@ -130,24 +152,33 @@ Para compilar un programa, primero cree un archivo vacío denominado `program` (
 Graph A
 
 add to A:
-    nodes b, c, d, e, f
-    edges c-4-d, b-2-c, e-1-c, c-2-f, e-f
+    nodes a, b, c, d, e, f, g, h
+    edges a-b, a-d, b-c, b-d, b-f, c-e, c-f, d-e, e-g
+
+A > outputAfterAdd
 
 remove from A:
-    edges c-4-d
-    nodes b	/* Internamente también borra la arista b-c */
+    nodes h
+    edges c-f
+
+A > outputAfterRemove
 
 apply to A:
-    bfs from e to f > outputA
+    bfs from a to g > bfsAtoG
+    dfs from b to e > dfsBtoE
     colors:
-        #ff0000 e, d		/* Es lo mismo que red e, d */
-        #00ff00 c, f		/* Es lo mismo que green c, f */
-    delete cut nodes > outputB
+        #ff0000 e, d
+        #00ff00 c, f
+    find cut nodes > cutNodesA
+    delete cut nodes > deletedCutNodesA
+    mst > mstA
+
+A > outputAfterEverything
 ```
 
-Este programa de ejemplo no crea un ejecutable en la versión actual del proyecto, pero en la final crearía un grafo llamado 'A', al que luego se le agregan y remueven nodos, para finalmente mostrar en el archivo de salida `outputA` el camino más corto entre nodos usando BFS, y en otro archivo `outputB` dicho grafo sin sus nodos de corte (si los hubiese), además de colorear los nodos presentes.
-
 Luego, ejecute el compilador desde el directorio raíz del proyecto, o desde cualquier otro lugar indicando el path hacia el script `start.sh` y pasando por parámetro el path hacia el programa a compilar:
+
+En Linux
 
 ```bash
 user@machine:path/ $ script/start.sh program
@@ -159,7 +190,30 @@ En Windows:
 user@machine:path/ $ script\start.bat program
 ```
 
-Debería obtener el resultado correcto de evaluar el programa anterior: `122318`.
+Este programa de ejemplo crea un ejecutable llamado `output.py`, el cual posee las operaciones pedidas, y debe ser ejecutado para generar las imágenes finales especificadas. Para ejecutarlo, simplemente correr:
+
+```bash
+user@machine:path/ $ py output.py
+```
+
+o
+
+```bash
+user@machine:path/ $ python output.py
+```
+
+Finalmente, las imágenes pedidas serán guardadas en una carpeta generada llamada `output`, que se encontrará en el directorio raíz del proyecto.
+
+En el caso del programa de ejemplo, algunas de las imágenes serán:
+
+#### Grafo luego de las operaciones add y remove
+![Alt text](/example_images/outputAfterRemove.png "outputAfterRemove")
+
+#### BFS desde A hacia G
+![Alt text](/example_images/bfsAtoG.png "bfsAtoG")
+
+#### Nodos de corte en el grafo
+![Alt text](/example_images/cutNodesA.png "cutNodesA")
 
 ## Testing
 

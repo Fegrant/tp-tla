@@ -1,5 +1,5 @@
 #include "../support/logger.h"
-#include "free_program.h"
+#include "../support/free_program.h"
 #include "generator.h"
 #include <stdlib.h>
 
@@ -77,12 +77,47 @@ void generateSetup() {
 	fprintf(fd, "\tos.makedirs('output')\n\n");
 }
 
-void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph) {
-	fprintf(fd, "%s_pos = _nx.spring_layout(%s)\n", graphName, graphName);
-	fprintf(fd, "_nx.draw(%s, with_labels=True, font_weight='bold', node_color='white', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'), pos=%s_pos)\n", graphName, graphName);
+static void printEdgesColors(char* graphName) {
+	fprintf(fd, "%s_edges_colors = []\n", graphName);
+	fprintf(fd, "for edge in %s.edges:\n", graphName);
+	fprintf(fd, "\tif edge in %s_edges:\n", graphName);
+	fprintf(fd, "\t\t%s_edges_colors.append('red')\n", graphName);
+	fprintf(fd, "\telse:\n");
+	fprintf(fd, "\t\t%s_edges_colors.append('black')\n", graphName);
+}
+
+static void printFindCutNodes(char * graphName) {
+	fprintf(fd, "%s_cut = _nx.all_node_cuts(%s)\n", graphName, graphName);
+	fprintf(fd, "%s_all_cuts = []\n", graphName);
+	fprintf(fd, "for cut_set in %s_cut:\n", graphName);
+	fprintf(fd, "\tfor value in cut_set:\n");
+	fprintf(fd, "\t\t%s_all_cuts.append(value)\n", graphName);
+	fprintf(fd, "%s_cut = %s_all_cuts\n", graphName, graphName);
+}
+
+static void printNodeLabels(char* graphName) {
+	fprintf(fd, "%s_node_labels = {}\n", graphName);
+	fprintf(fd, "for node in %s.nodes:\n", graphName);
+	fprintf(fd, "\t%s_node_labels[node] = node\n", graphName);
+}
+
+void printGenerateOutputImage(char * graphName, char * outputFile) {
 	fprintf(fd, "_nx.draw_networkx_edge_labels(%s, %s_pos, edge_labels=_nx.get_edge_attributes(%s, 'weight'))\n", graphName, graphName, graphName);
-	fprintf(fd, "plt.savefig('output/%s.png')\n", outputGraph->outputFile);
+	fprintf(fd, "%s_labels = _nx.draw_networkx_labels(%s, %s_pos, labels=%s_node_labels, font_weight='bold', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'))\n", graphName, graphName, graphName, graphName);
+	fprintf(fd, "if %s_node_colors is not None:\n", graphName);
+	fprintf(fd, "\tfor t, c in zip(%s_labels.values(), %s_node_colors):\n", graphName, graphName);
+	fprintf(fd, "\t\tt.set_backgroundcolor(c)\n");
+	fprintf(fd, "plt.savefig('output/%s.png')\n", outputFile);
 	fprintf(fd, "plt.clf()\n\n");
+	fileCounter++;
+}
+
+void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph) {
+	fprintf(fd, "%s_node_colors = None\n", graphName);
+	printNodeLabels(graphName);
+	fprintf(fd, "%s_pos = _nx.spring_layout(%s)\n", graphName, graphName);
+	fprintf(fd, "_nx.draw(%s, node_color='white', pos=%s_pos)\n", graphName, graphName);
+	printGenerateOutputImage(graphName, outputGraph->outputFile);
 	fileCounter++;
 }
 
@@ -213,21 +248,6 @@ void generateRemove(char *graphName, AddRemoveInstructionList *addList) {
 	}
 }
 
-static void printNodeLabels(char* graphName) {
-	fprintf(fd, "%s_node_labels = {}\n", graphName);
-	fprintf(fd, "for node in %s.nodes:\n", graphName);
-	fprintf(fd, "\t%s_node_labels[node] = node\n", graphName);
-}
-
-static void printEdgesColors(char* graphName) {
-	fprintf(fd, "%s_edges_colors = []\n", graphName);
-	fprintf(fd, "for edge in %s.edges:\n", graphName);
-	fprintf(fd, "\tif edge in %s_bfs_edges:\n", graphName);
-	fprintf(fd, "\t\t%s_edges_colors.append('red')\n", graphName);
-	fprintf(fd, "\telse:\n");
-	fprintf(fd, "\t\t%s_edges_colors.append('black')\n", graphName);
-}
-
 void generateApply(char *graphName, ApplyInstructionList *applyList) {
 	fprintf(fd, "\n");
 	fprintf(fd, "%s_node_colors = None\n\n", graphName);
@@ -241,7 +261,7 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 		case BFS_TYPE: ;
 			BfsBlock *bfs = (BfsBlock *)instruction->applyInstruction;
 			fprintf(fd, "%s_bfs_tree = _nx.bfs_tree(%s, '%s')\n", graphName, graphName, bfs->from);
-			fprintf(fd, "%s_bfs_edges = [tuple(sorted(edge)) for edge in _nx.utils.pairwise(_nx.shortest_path(%s_bfs_tree, '%s', '%s'))]\n", graphName, graphName, bfs->from, bfs->to);
+			fprintf(fd, "%s_edges = [tuple(sorted(edge)) for edge in _nx.utils.pairwise(_nx.shortest_path(%s_bfs_tree, '%s', '%s'))]\n", graphName, graphName, bfs->from, bfs->to);
 			printNodeLabels(graphName);
 			printEdgesColors(graphName);
 			edgeColors = 1;
@@ -249,7 +269,7 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 		case DFS_TYPE: ;
 			DfsBlock *dfs = (DfsBlock *)instruction->applyInstruction;
 			fprintf(fd, "%s_dfs_tree = _nx.dfs_tree(%s, '%s')\n", graphName, graphName, dfs->from);
-			fprintf(fd, "%s_dfs_edges = [tuple(sorted(edge)) for edge in _nx.utils.pairwise(_nx.shortest_path(%s_dfs_tree, '%s', '%s'))]\n", graphName, graphName, dfs->from, dfs->to);
+			fprintf(fd, "%s_edges = [tuple(sorted(edge)) for edge in _nx.utils.pairwise(_nx.shortest_path(%s_dfs_tree, '%s', '%s'))]\n", graphName, graphName, dfs->from, dfs->to);
 			printNodeLabels(graphName);
 			printEdgesColors(graphName);
 			edgeColors = 1;
@@ -268,20 +288,20 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 			break;
 		case FIND_CUT_NODES:
 			printNodeLabels(graphName);
-			fprintf(fd, "%s_cut = _nx.minimum_node_cut(%s)\n"
-						"%s_node_colors = ['red' if node in %s_cut else 'white' for node in %s.nodes]\n", graphName, graphName, graphName, graphName, graphName);
+			printFindCutNodes(graphName);
+			fprintf(fd, "%s_node_colors = ['red' if node in %s_cut else 'white' for node in %s.nodes]\n", graphName, graphName, graphName);
 			fprintf(fd, "%s_edges_colors = []\n", graphName);
 			break;
 		case DELETE_CUT_NODES:
-			fprintf(fd, "%s_cut = _nx.minimum_node_cut(%s)\n"
-						"for node in %s_cut:\n"
-						"\t%s.remove_node(node)\n", graphName, graphName, graphName, graphName);
+			printFindCutNodes(graphName);
+			fprintf(fd, "for node in %s_cut:\n"
+						"\t%s.remove_node(node)\n", graphName, graphName);
 			printNodeLabels(graphName);
 			fprintf(fd, "%s_node_colors = None\n", graphName);
 			break;
 		case MST_TYPE:
 			fprintf(fd, "%s_mst = _nx.minimum_spanning_tree(%s)\n", graphName, graphName);
-			fprintf(fd, "%s_mst_edges = [tuple(sorted([edge[0], edge[1]])) for edge in %s_mst.edges(data=True)]\n", graphName, graphName);
+			fprintf(fd, "%s_edges = [tuple(sorted([edge[0], edge[1]])) for edge in %s_mst.edges(data=True)]\n", graphName, graphName);
 			printNodeLabels(graphName);
 			printEdgesColors(graphName);
 			edgeColors = 1;
@@ -296,18 +316,7 @@ void generateApply(char *graphName, ApplyInstructionList *applyList) {
 			} else {
 				fprintf(fd, "_nx.draw(%s, node_color='white', pos=%s_pos)\n", graphName, graphName);
 			}
-			fprintf(fd, "_nx.draw_networkx_edge_labels(%s, %s_pos, edge_labels=_nx.get_edge_attributes(%s, 'weight'))\n", graphName, graphName, graphName);
-			fprintf(fd, "%s_labels = _nx.draw_networkx_labels(%s, %s_pos, labels=%s_node_labels, font_weight='bold', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'))\n", graphName, graphName, graphName, graphName);
-			fprintf(fd, "if %s_node_colors is not None:\n", graphName);
-			fprintf(fd, "\tfor t, c in zip(%s_labels.values(), %s_node_colors):\n", graphName, graphName);
-			fprintf(fd, "\t\tt.set_backgroundcolor(c)\n");
-			char * outputFile = instruction->outputFile;
-			if (outputFile == NULL) {
-				outputFile = graphName;
-			}
-			fprintf(fd, "plt.savefig('output/%s.png')\n", outputFile);
-			fprintf(fd, "plt.clf()\n\n");
-			fileCounter++;
+			printGenerateOutputImage(graphName, instruction->outputFile);
 		}
 	}
 }

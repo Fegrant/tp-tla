@@ -18,8 +18,8 @@ apply to A:
     colors:
         #ff0000 e, d
         #00ff00 c, f
+    mst > mstA
     find cut nodes > cutNodesA
     delete cut nodes > deletedCutNodesA
-    mst > mstA
 
 A > outputAfterEverything
