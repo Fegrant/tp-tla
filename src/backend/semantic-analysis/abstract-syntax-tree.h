@@ -131,17 +131,23 @@ typedef struct ApplyInstructionList {
 	struct ApplyInstructionList * next;
 } ApplyInstructionList;
 
+typedef struct OutputGraphInstruction {
+	char * outputFile;
+} OutputGraphInstruction;
+
 typedef enum BlockType{
 	ADD_BLOCK,
 	REMOVE_BLOCK,
 	APPLY_BLOCK,
-	GRAPH
+	GRAPH,
+	OUTPUT_GRAPH
 } BlockType;
 
 typedef union Block {
 	struct GraphList graph;
 	struct AddRemoveInstructionList addRemove;
 	struct ApplyInstructionList apply;
+	struct OutputGraphInstruction outputGraph;
 } Block;
 
 typedef struct BlockList {

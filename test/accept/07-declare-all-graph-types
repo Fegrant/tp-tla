@@ -3,20 +3,32 @@
 Cycle B:
     nodes a, b, c, d, e
 
+B > B
+
 Wheel Cgraph:
     center a
     nodes b, c, d
+
+Cgraph > Cgraph
 
 Star anotherGraph:
     center a
     nodes b, c, d, e
 
+anotherGraph > anotherGraph
+
 Complete allLettersWithoutNumbers:
     nodes a, b, c, d, e
 
-BipartiteComplete LastOne:
+allLettersWithoutNumbers > allLettersWithoutNumbers
+
+BipartiteComplete Knm:
     group a, b, c, d
     group e, f
 
+Knm > Knm
+
 apply to anotherGraph:
     find cut nodes
+
+anotherGraph > anotherGraph

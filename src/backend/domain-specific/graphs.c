@@ -1,5 +1,6 @@
 #include "graphs.h"
 #include <stdlib.h>
+#include <string.h>
 
 NodeList *createNode(char *name) {
     NodeList *ret = malloc(sizeof(NodeList));
@@ -55,13 +56,11 @@ NodeList *removeNodeRecursive(NodeList *nodes, char *name, int *wasFound) {
 
 EdgeList *createEdge(char *leftNodeName, char* rightNodeName, int weight) {
     EdgeList * edge = calloc(1, sizeof(EdgeList));
-    NodeList * leftNode = calloc(1, sizeof(NodeList));
-    NodeList * rightNode = calloc(1, sizeof(NodeList));    
+    char * leftNode = calloc(1, sizeof(char) * (strlen(leftNodeName) + 1));
+    char * rightNode = calloc(1, sizeof(char) * (strlen(rightNodeName) + 1));    
 
-    leftNode->name = calloc(1, sizeof(char) * strlen(leftNodeName));
-    rightNode->name = calloc(1, sizeof(char) * strlen(rightNodeName));
-    strcpy(leftNode->name, leftNodeName);
-    strcpy(rightNode->name, rightNodeName);
+    strcpy(leftNode, leftNodeName);
+    strcpy(rightNode, rightNodeName);
 
     edge->leftNode = leftNode;
     edge->rightNode = rightNode;
@@ -77,11 +76,11 @@ EdgeList *addEdgeRecursive(EdgeList * edges, char * leftNodeName, char * rightNo
         return aux;
     }
     
-    NodeList *leftNode = (NodeList *)edges->leftNode;
-    NodeList *rightNode = (NodeList *)edges->rightNode;
+    char * leftNode = edges->leftNode;
+    char * rightNode = edges->rightNode;
 
-    int leftCmp = strcmp(leftNode->name, leftNodeName);
-    int rightCmp = strcmp(rightNode->name, rightNodeName);
+    int leftCmp = strcmp(leftNode, leftNodeName);
+    int rightCmp = strcmp(rightNode, rightNodeName);
 
     if (leftCmp > 0 || (leftCmp == 0 && rightCmp > 0)) {
         *repeated = FALSE;
@@ -98,11 +97,11 @@ EdgeList *addEdgeRecursive(EdgeList * edges, char * leftNodeName, char * rightNo
 }
 
 EdgeList *removeEdgeRecursive(EdgeList * edges, char * leftNodeName, char * rightNodeName, int weight, int *wasFound) {
-    NodeList *leftNode = (NodeList*)edges->leftNode;
-    NodeList *rightNode = (NodeList*)edges->rightNode;
+    char *leftNode = edges->leftNode;
+    char *rightNode = edges->rightNode;
 
-    int leftCmp = strcmp(leftNode->name, leftNodeName);
-    int rightCmp = strcmp(rightNode->name, rightNodeName);
+    int leftCmp = strcmp(leftNode, leftNodeName);
+    int rightCmp = strcmp(rightNode, rightNodeName);
 
     if (edges == NULL || leftCmp > 0 || (leftCmp == 0 && rightCmp > 0)) {
         *wasFound = FALSE;
@@ -111,9 +110,7 @@ EdgeList *removeEdgeRecursive(EdgeList * edges, char * leftNodeName, char * righ
     if (leftCmp == 0 && rightCmp == 0) {
         *wasFound = TRUE;
         EdgeList* next = edges->next;
-        free(((NodeList*)edges->leftNode)->name);
         free(edges->leftNode);
-        free(((NodeList*)edges->rightNode)->name);
         free(edges->rightNode);
         free(edges);
         return next;

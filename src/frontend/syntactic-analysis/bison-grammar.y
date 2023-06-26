@@ -23,6 +23,8 @@
 	BlockList * declaration;
 	BlockList * addBlockBegin;
 	BlockList * removeBlockBegin;
+	BlockList * outputGraph;
+	BlockList * applyBlockBegin;
 	AddRemoveInstructionList * addRemoveBlock;
 	AddRemoveInstructionList * addRemoveBlockInstruction;
 	NodeList * nodeList;
@@ -31,7 +33,6 @@
 	EdgeList * edge;
 	EdgeList * weightedEdge;
 
-	BlockList * applyBlockBegin;
 	ApplyInstructionList * applyBlock;
 	ApplyInstructionList * applyBlockInstruction;
 	ApplyInstructionList * findCutNodes;
@@ -102,6 +103,7 @@
 %type <declaration> declaration
 %type <addBlockBegin> addBlockBegin
 %type <removeBlockBegin> removeBlockBegin
+%type <outputGraph> outputGraph
 %type <addRemoveBlock> addRemoveBlock
 %type <addRemoveBlockInstruction> addRemoveBlockInstruction
 %type <applyBlockInstruction> applyBlockInstruction
@@ -142,10 +144,14 @@ block: instruction block												{ $$ = AppendBlockListGrammarAction($1, $2);
 	| instruction														{ $$ = BlockListGrammarAction($1); }
 	;
 
-instruction: declaration												{ $$ = BlockListGrammarAction($1); }
+instruction: outputGraph												{ $$ = BlockListGrammarAction($1); }
+	| declaration														{ $$ = BlockListGrammarAction($1); }
 	| addBlockBegin														{ $$ = BlockListGrammarAction($1); }
 	| removeBlockBegin													{ $$ = BlockListGrammarAction($1); }
 	| applyBlockBegin													{ $$ = BlockListGrammarAction($1); }
+	;
+
+outputGraph: STRING GREATER STRING										{ $$ = CreateOutputGraphBlockGrammarAction($1, $3); }
 	;
 
 addBlockBegin: ADD TO STRING BEGIN_BLOCK addRemoveBlock					{ $$ = CreateAddBlockGrammarAction($3, $5); }

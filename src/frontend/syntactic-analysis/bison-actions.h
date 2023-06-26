@@ -43,6 +43,7 @@ BlockList * CreateRemoveBlockGrammarAction(char * name, AddRemoveInstructionList
 BlockList * CreateApplyBlockGrammarAction(char * name, ApplyInstructionList * block);
 BlockList * AppendBlockGrammarAction(BlockList * list, BlockList * block);
 BlockList * BlockGrammarAction(BlockList * list);
+BlockList * CreateOutputGraphBlockGrammarAction(char *name, char *output);
 ColorList * AppendColorListGrammarAction(ColorList * colorNodes, ColorList * list);
 ColorList * ColorListGrammarAction(ColorList * colorList);
 ColorList * CreateColorListGrammarAction(char rgb[7], NodeList * nodes);

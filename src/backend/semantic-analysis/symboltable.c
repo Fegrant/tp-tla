@@ -21,9 +21,7 @@ static void free_nodes(NodeList *nodes) {
 static void free_edges(EdgeList *edges) {
     if (edges == NULL) return;
     free_edges(edges->next);
-    free(((NodeList*)edges->leftNode)->name);
     free(edges->leftNode);
-    free(((NodeList*)edges->rightNode)->name);
     free(edges->rightNode);
     free(edges);
 }
@@ -112,12 +110,12 @@ int symbol_table_addEdge(char* graphName, char* leftNodeName, char* rightNodeNam
         }
         if (saved->edgesA != NULL) {
             int repeated = FALSE;
-            saved->edgesA = addEdgeRecursive(saved->edgesA, leftNodeName, rightNodeName, weight, &repeated);
+            saved->edgesA = addEdgeRecursive(saved->edgesA, firstNodeName, secondNodeName, weight, &repeated);
             if (repeated == TRUE) {
                 return EDGE_ALREADY_EXISTS;              // Edge already exists
             }
         } else {
-            saved->edgesA = createEdge(leftNodeName, rightNodeName, weight);
+            saved->edgesA = createEdge(firstNodeName, secondNodeName, weight);
         }
         return NO_ERRORS;
     }

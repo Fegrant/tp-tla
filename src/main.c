@@ -33,7 +33,7 @@ const int main(const int argumentCount, const char ** arguments) {
 				LogInfo("La compilacion fue exitosa.");
 					// LogInfo("a ver %s", state.program->actions->graphName);
 				Generator(state.program);
-				state.program = NULL;			
+				// state.program = NULL;			
 			}
 			else {
 				LogError("Se produjo un error en la aplicacion.");

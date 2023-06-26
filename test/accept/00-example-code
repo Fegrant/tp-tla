@@ -4,9 +4,13 @@ add to A:
     nodes a, b, c, d, e, f, g, h
     edges a-b, a-d, b-c, b-d, b-f, c-e, c-f, d-e, e-g
 
+A > outputAfterAdd
+
 remove from A:
     nodes h
     edges c-f
+
+A > outputAfterRemove
 
 apply to A:
     bfs from a to g > bfsAtoG
@@ -17,3 +21,5 @@ apply to A:
     find cut nodes > cutNodesA
     delete cut nodes > deletedCutNodesA
     mst > mstA
+
+A > outputAfterEverything

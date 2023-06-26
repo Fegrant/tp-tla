@@ -33,6 +33,7 @@ static int programSuccess = true;
 BlockList * ProgramGrammarAction(BlockList * blockList) {
 	// vvvvv De la calculadora vvvvv
 	// LogDebug("\tProgramGrammarAction(%d)", 0);
+	LogDebug("\tProgramGrammarAction(graph:%s)", blockList->graphName);
 	
 	/*
 	* "state" es una variable global que almacena el estado del compilador,
@@ -58,55 +59,60 @@ BlockList * ProgramGrammarAction(BlockList * blockList) {
 }
 
 BlockList * AppendProgramGrammarAction (BlockList * declaration, BlockList * blockList) {
+	LogDebug("\tAppendProgramGrammarAction(graph:%s, top_of_list:%s)", declaration->graphName, blockList->graphName);
 	declaration->next = blockList;
 	return ProgramGrammarAction(declaration);
 }
 
 BlockList * AppendBlockListGrammarAction(BlockList * block, BlockList * list) {
+	LogDebug("\tAppendBlockListGrammarAction(graph:%s, top_of_list:%s)", block->graphName, list->graphName);
 	block->next = list;
 	return block;
 }
 
 BlockList * BlockListGrammarAction(BlockList * blockList) {
+	LogDebug("\tBlockListGrammarAction(graph:%s)", blockList->graphName);
 	return blockList;
 }
 
 EdgeList * CreateWeightedEdgeGrammarAction(char * leftNode, char * rightNode, int weight) {
+	LogDebug("\tCreateWeightedEdgeGrammarAction(%s, %s, %d)", leftNode, rightNode, weight);
 	EdgeList * edge = calloc(1, sizeof(EdgeList));
-	NodeList * left = calloc(1, sizeof(NodeList));
-	NodeList * right = calloc(1, sizeof(NodeList));
-	left->name = leftNode;
-	right->name = rightNode;
 	if (strcmp(leftNode, rightNode) == 0) {
 		LogError("No puede existir un lazo en el nodo '%s'", leftNode);
 		programSuccess = false;
 	}
-	edge->leftNode = left;
-	edge->rightNode = right;
+	edge->leftNode = leftNode;
+	edge->rightNode = rightNode;
 	edge->weight = weight;
 	return edge;
 }
 
 EdgeList * CreateEdgeGrammarAction(char * leftNode, char * rightNode) {
+	LogDebug("\tCreateEdgeGrammarAction(%s, %s)", leftNode, rightNode);
 	return CreateWeightedEdgeGrammarAction(leftNode, rightNode, 1);
 }
 
 EdgeList * AppendEdgeGrammarAction(EdgeList * edge, EdgeList * list) {
+	LogDebug("\tAppendEdgeGrammarAction(edge:(%s, %s), top_of_list:(%s, %s))", edge->leftNode, edge->rightNode, list->leftNode, list->rightNode);
 	edge->next = list;
 	return edge;
 } 
 
 EdgeList * EdgeListGrammarAction(EdgeList * edge) {
+	LogDebug("\tEdgeListGrammarAction(%s, %s)", edge->leftNode, edge->rightNode);
 	return edge;
 }
 
 NodeList * CreateNodeGrammarAction(char * name) {
+	LogDebug("\tCreateNodeGrammarAction(%s)", name);
 	NodeList * node = calloc(1, sizeof(NodeList));
 	node->name = name;
 	return node;
 }
 
 NodeList * AppendNodeGrammarAction(NodeList * node, NodeList * list) {
+	LogDebug("\tAppendNodeGrammarAction(node:%s, top_of_list:%s)", node->name, list->name);
 	node->next = list;
 	return node;
 }
@@ -122,7 +128,7 @@ AddRemoveInstructionList * AddRemoveInstructionListGrammarAction(AddRemoveInstru
 
 AddRemoveInstructionList * AddRemoveEdgeListGrammarAction(EdgeList * edgeList) {
 	AddRemoveInstruction * instruction = calloc(1, sizeof(AddRemoveInstruction));
-	instruction = edgeList;
+	instruction = (AddRemoveInstruction*)edgeList;
 	AddRemoveInstructionList * instructionList = calloc(1, sizeof(AddRemoveInstructionList));
 	instructionList->addRemoveInstruction = instruction;
 	instructionList->instructionType = EDGE_LIST;
@@ -131,7 +137,7 @@ AddRemoveInstructionList * AddRemoveEdgeListGrammarAction(EdgeList * edgeList) {
 
 AddRemoveInstructionList * AddRemoveNodeListGrammarAction(NodeList * nodeList) {
 	AddRemoveInstruction * instruction = calloc(1, sizeof(AddRemoveInstruction));
-	instruction = nodeList;
+	instruction = (AddRemoveInstruction*)nodeList;
 	AddRemoveInstructionList * instructionList = calloc(1, sizeof(AddRemoveInstructionList));
 	instructionList->addRemoveInstruction = instruction;
 	instructionList->instructionType = NODE_LIST;
@@ -174,7 +180,7 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 	graphList->graph = graph;
 	graphList->graphType = type;
 	BlockList * block = calloc(1, sizeof(BlockList));
-	block->block = graphList;
+	block->block = (Block*)graphList;
 	block->graphName = name;
 	block->type = GRAPH;
 	if (symbol_table_putGraph(name) == GRAPH_ALREADY_EXISTS) {
@@ -182,7 +188,7 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 		programSuccess = false;
 	}
 	if (graphList->graphType == CYCLE) {
-		CycleGraph * c_graph = graph;
+		CycleGraph * c_graph = (CycleGraph*)graph;
 		NodeList * last = NULL;
 		for (NodeList * node = c_graph->nodeList ; node ; node = node->next) {
 			int result = symbol_table_addNode(name, node->name);
@@ -200,7 +206,7 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 			last = node;
 		}
 	} else if (graphList->graphType == WHEEL) {
-		WheelGraph * w_graph = graph;
+		WheelGraph * w_graph = (WheelGraph*)graph;
 		symbol_table_addNode(name, w_graph->center);
 		NodeList * last = NULL;
 		for (NodeList *node = w_graph->nodeList ; node ; node = node->next) {
@@ -224,7 +230,7 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 			last = node;
 		}
 	} else if (graphList->graphType == STAR) {
-		StarGraph * s_graph = graphList->graph;
+		StarGraph * s_graph = (StarGraph*)graphList->graph;
 		symbol_table_addNode(name, s_graph->center);
 		for (NodeList *node = s_graph->nodeList ; node ; node = node->next) {
 			int result = symbol_table_addNode(name, node->name);
@@ -239,15 +245,17 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 			}
 		}
 	} else if (graphList->graphType == COMPLETE) {
-		CompleteGraph * k_graph = graphList->graph;
-		for (NodeList *node = k_graph ; node ; node=node->next) {
+		CompleteGraph * k_graph = (CompleteGraph*)graphList->graph;
+		for (NodeList *node = k_graph->nodeList ; node ; node=node->next) {
 			int result = symbol_table_addNode(name, node->name);
 			if (result == NODE_ALREADY_EXISTS) {
 				LogError("No pueden existir 2 nodos '%s' en el grafo '%s'", node->name, name);
 				programSuccess = false;
 			}
+		}
+		for (NodeList *node = k_graph->nodeList ; node ; node=node->next) {
 			for (NodeList *connected = node->next ; connected ; connected = connected->next) {
-				result = symbol_table_addEdge(name, node->name, connected->name, 1);
+				int result = symbol_table_addEdge(name, node->name, connected->name, 1);
 				if (result == EDGE_ALREADY_EXISTS) {
 					LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", connected->name, node->name, name);
 					programSuccess = false;					
@@ -255,7 +263,7 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 			}
 		}
 	} else if (graphList->graphType == BIPARTITE_COMPLETE) {
-		BipartiteCompleteGraph * b_graph = graphList->graph;
+		BipartiteCompleteGraph * b_graph = (BipartiteCompleteGraph*)graphList->graph;
 		for (NodeList *node = b_graph->groupA ; node ; node = node->next) {
 			int result = symbol_table_addNode(name, node->name);
 			if (result == NODE_ALREADY_EXISTS) {
@@ -270,7 +278,7 @@ BlockList * CreateGraphGrammarAction(char * name, Graph * graph, GraphType type)
 				programSuccess = false;
 			}
 			for (NodeList * groupANode = b_graph->groupA ; groupANode ; groupANode = groupANode->next) {
-				int result = symbol_table_addEdge(name, groupANode->name, node->name, 1);
+				result = symbol_table_addEdge(name, node->name, groupANode->name, 1);
 				if (result == EDGE_ALREADY_EXISTS) {
 					LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", groupANode->name, node->name, name);
 					programSuccess = false;
@@ -317,7 +325,7 @@ BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType
 	}
 	switch (type) {
 		case ADD_BLOCK: ;
-			AddRemoveInstructionList * addNodesEdgesList = blockList->block;
+			AddRemoveInstructionList * addNodesEdgesList = (AddRemoveInstructionList *)blockList->block;
 			for (AddRemoveInstructionList * instruction = addNodesEdgesList ; instruction ; instruction = instruction->next) {
 				if (instruction->instructionType == NODE_LIST) {
 					for (NodeList *node = (NodeList*)instruction->addRemoveInstruction ; node ; node = node->next) {
@@ -332,17 +340,17 @@ BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType
 					}
 				} else if (instruction->instructionType == EDGE_LIST) {
 					for (EdgeList *edge = (EdgeList*)instruction->addRemoveInstruction ; edge ; edge = edge->next) {
-						NodeList* leftNode = edge->leftNode;
-						NodeList* rightNode = edge->rightNode;
-						int result = symbol_table_addEdge(name, leftNode->name, rightNode->name, edge->weight);
+						char* leftNode = edge->leftNode;
+						char* rightNode = edge->rightNode;
+						int result = symbol_table_addEdge(name, leftNode, rightNode, edge->weight);
 						if (result == EDGE_ALREADY_EXISTS) {
-							LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", leftNode->name, rightNode->name, name);
+							LogError("No pueden existir 2 aristas '%s-%s' en el grafo '%s'", leftNode, rightNode, name);
 							programSuccess = false;
 						} else if (result == NODE_NOT_EXISTS) {
-							LogError("Un nodo de la arista '%s-%s' no existe en el grafo '%s'", leftNode->name, rightNode->name, name);
+							LogError("Un nodo de la arista '%s-%s' no existe en el grafo '%s'", leftNode, rightNode, name);
 							programSuccess = false;
 						} else if (result == GRAPH_NOT_EXISTS) {
-							LogError("El grafo '%s' sobre el que se quiere añadir la arista '%s-%s' no existe", name, (char*)leftNode->name, (char*)rightNode->name);
+							LogError("El grafo '%s' sobre el que se quiere añadir la arista '%s-%s' no existe", name, (char*)leftNode, (char*)rightNode);
 							programSuccess = false;
 						}
 					}
@@ -350,7 +358,7 @@ BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType
 			}
 			break;
 		case REMOVE_BLOCK: ;
-			AddRemoveInstructionList * removeNodesEdgesList = blockList->block;
+			AddRemoveInstructionList * removeNodesEdgesList = (AddRemoveInstructionList *)blockList->block;
 			for (AddRemoveInstructionList * instruction = removeNodesEdgesList ; instruction ; instruction = instruction->next) {
 				if (instruction->instructionType == NODE_LIST) {
 					for (NodeList *node = (NodeList*)instruction->addRemoveInstruction ; node ; node = node->next) {
@@ -365,17 +373,17 @@ BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType
 					}
 				} else if (instruction->instructionType == EDGE_LIST) {
 					for (EdgeList *edge = (EdgeList*)instruction->addRemoveInstruction ; edge ; edge = edge->next) {
-						NodeList* leftNode = edge->leftNode;
-						NodeList* rightNode = edge->rightNode;
-						int result = symbol_table_removeEdge(name, leftNode->name, rightNode->name, edge->weight);
+						char* leftNode = edge->leftNode;
+						char* rightNode = edge->rightNode;
+						int result = symbol_table_removeEdge(name, leftNode, rightNode, edge->weight);
 						if (result == EDGE_NOT_EXISTS) {
-							LogError("La arista '%s-%s' a borrar no existe en el grafo '%s'", leftNode->name, rightNode->name, name);
+							LogError("La arista '%s-%s' a borrar no existe en el grafo '%s'", leftNode, rightNode, name);
 							programSuccess = false;
 						} else if (result == NODE_NOT_EXISTS) {
-							LogError("Un nodo de la arista '%s-%s' no existe en el grafo '%s'", leftNode->name, rightNode->name, name);
+							LogError("Un nodo de la arista '%s-%s' no existe en el grafo '%s'", leftNode, rightNode, name);
 							programSuccess = false;
 						} else if (result == GRAPH_NOT_EXISTS) {
-							LogError("El grafo '%s' sobre el que se quiere borrar la arista '%s-%s' no existe", name, leftNode->name, rightNode->name);
+							LogError("El grafo '%s' sobre el que se quiere borrar la arista '%s-%s' no existe", name, leftNode, rightNode);
 							programSuccess = false;
 						}
 					}
@@ -383,7 +391,7 @@ BlockList * CreateActionBlockGrammarAction(char * name, Block * block, BlockType
 			}
 			break;
 		case APPLY_BLOCK: ;
-			ApplyInstructionList * instructionList = blockList->block;
+			ApplyInstructionList * instructionList = (ApplyInstructionList *)blockList->block;
 			for (ApplyInstructionList * instruction = instructionList ; instruction ; instruction = instruction->next ) {
 				if (instruction->instructionType == DFS_TYPE) {
 					char * from = ((DfsBlock*)instruction->applyInstruction)->from;
@@ -481,7 +489,7 @@ ColorList * CreateColorListGrammarAction(char * rgb, NodeList * nodes) {
 ApplyInstructionList * CreateColorsBlockGrammarAction(ColorList * colorList) {
 	ApplyInstructionList * instructionList = calloc(1, sizeof(ApplyInstructionList));
 	instructionList->instructionType = COLORS;
-	instructionList->applyInstruction = colorList;
+	instructionList->applyInstruction = (ApplyInstruction*)colorList;
 	return instructionList;
 }
 
@@ -535,4 +543,20 @@ ApplyInstructionList * AppendApplyBlockGrammarAction (ApplyInstructionList * ins
 
 ApplyInstructionList * ApplyBlockGrammarAction (ApplyInstructionList * list) {
 	return list;
+}
+
+BlockList * CreateOutputGraphBlockGrammarAction(char *name, char *output) {
+	LogDebug("\tCreateOutputGraphBlockGrammarAction(%s, %s)\n", name, output);
+	if (!symbol_table_exists(name)) {
+		LogError("El grafo '%s' que se quiere exportar no existe", name);
+		programSuccess = false;
+	}
+
+	BlockList * block = calloc(1, sizeof(BlockList));
+	OutputGraphInstruction * instruction = calloc(1, sizeof(OutputGraphInstruction));
+	instruction->outputFile = output;
+	block->block = (Block *)instruction;
+	block->graphName = name;
+	block->type = OUTPUT_GRAPH;
+	return block;
 }

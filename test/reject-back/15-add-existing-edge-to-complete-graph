@@ -3,3 +3,5 @@ Complete allLettersWithoutNumbers:
 
 add to allLettersWithoutNumbers:
     edges a-100-b, c-40-d
+
+allLettersWithoutNumbers > a

@@ -10,5 +10,6 @@ void freeEdgeList(EdgeList * list);
 void freeAddRemove(AddRemoveInstructionList * list);
 void freeApply(ApplyInstructionList * list);
 void freeColors(ColorList * list);
+void freeOutputGraph(OutputGraphInstruction * instruction);
 
 #endif

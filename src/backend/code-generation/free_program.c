@@ -127,3 +127,13 @@ void freeColors(ColorList * list) {
     }
     return;
 }
+
+void freeOutputGraph(OutputGraphInstruction * instruction) {
+    if (instruction != NULL) {
+        if (instruction->outputFile != NULL) {
+            free(instruction->outputFile);
+        }
+        free(instruction);
+    }
+    return;
+}

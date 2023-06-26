@@ -17,6 +17,8 @@ void generateRemove(char *graphName, AddRemoveInstructionList *addList);
 
 void generateApply(char *graphName, ApplyInstructionList *applyList);
 
+void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph);
+
 FILE * fd;
 
 int fileCounter = 0;
@@ -50,6 +52,10 @@ void Generator(Program *program) {
 			generateApply(action->graphName, (ApplyInstructionList *) action->block);
 			freeApply((ApplyInstructionList *) action->block);
 			break;
+		case OUTPUT_GRAPH:
+			generateOutputGraph(action->graphName, (OutputGraphInstruction*) action->block);
+			freeOutputGraph(((OutputGraphInstruction*) action->block));
+			break;
 		default:
 			break;
 		}
@@ -69,6 +75,15 @@ void generateSetup() {
 	fprintf(fd, "import os\n\n");
 	fprintf(fd, "if not os.path.exists('output'):\n");
 	fprintf(fd, "\tos.makedirs('output')\n\n");
+}
+
+void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph) {
+	fprintf(fd, "%s_pos = _nx.spring_layout(%s)\n", graphName, graphName);
+	fprintf(fd, "_nx.draw(%s, with_labels=True, font_weight='bold', node_color='white', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.4'), pos=%s_pos)\n", graphName, graphName);
+	fprintf(fd, "_nx.draw_networkx_edge_labels(%s, %s_pos, edge_labels=_nx.get_edge_attributes(%s, 'weight'))\n", graphName, graphName, graphName);
+	fprintf(fd, "plt.savefig('output/%s.png')\n", outputGraph->outputFile);
+	fprintf(fd, "plt.clf()\n\n");
+	fileCounter++;
 }
 
 void generateGraph(char *graphName, GraphList * graph) {
@@ -147,6 +162,12 @@ void generateGraph(char *graphName, GraphList * graph) {
 			}
 			break;
 		case SIMPLE:
+		case BIPARTITE_COMPLETE:
+			for (NodeList * auxA = a ; auxA ; auxA = auxA->next) {
+				for (NodeList * auxB = b ; auxB ; auxB = auxB->next) {
+					fprintf(fd, "('%s', '%s', %d), ", auxA->name, auxB->name, 1);
+				}
+			}
 		default:
 			break;
 	}
@@ -167,7 +188,7 @@ void generateAdd(char *graphName, AddRemoveInstructionList *addList) {
 		} else if (aux->instructionType == EDGE_LIST) {
 			fprintf(fd, "%s.add_weighted_edges_from([", graphName);
 			for (EdgeList *aux2 = (EdgeList *)aux->addRemoveInstruction; aux2; aux2 = aux2->next) {
-				fprintf(fd, "('%s', '%s', %d), ", ((NodeList*)aux2->leftNode)->name, ((NodeList*)aux2->rightNode)->name, aux2->weight);
+				fprintf(fd, "('%s', '%s', %d), ", aux2->leftNode, aux2->rightNode, aux2->weight);
 			}
 			fprintf(fd, "])\n");
 		}
@@ -185,7 +206,7 @@ void generateRemove(char *graphName, AddRemoveInstructionList *addList) {
 		} else if (aux->instructionType == EDGE_LIST) {
 			fprintf(fd, "%s.remove_edges_from([", graphName);
 			for (EdgeList *aux2 = (EdgeList *)aux->addRemoveInstruction; aux2; aux2 = aux2->next) {
-				fprintf(fd, "('%s', '%s'), ", ((NodeList*)aux2->leftNode)->name, ((NodeList*)aux2->rightNode)->name);
+				fprintf(fd, "('%s', '%s'), ", aux2->leftNode, aux2->rightNode);
 			}
 			fprintf(fd, "])\n");
 		}
