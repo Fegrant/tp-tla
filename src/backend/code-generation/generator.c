@@ -2,6 +2,7 @@
 #include "../support/free_program.h"
 #include "generator.h"
 #include <stdlib.h>
+#include <string.h>
 
 /**
  * Implementación de "generator.h".
@@ -107,9 +108,13 @@ void printGenerateOutputImage(char * graphName, char * outputFile) {
 	fprintf(fd, "if %s_node_colors is not None:\n", graphName);
 	fprintf(fd, "\tfor t, c in zip(%s_labels.values(), %s_node_colors):\n", graphName, graphName);
 	fprintf(fd, "\t\tt.set_backgroundcolor(c)\n");
-	fprintf(fd, "plt.savefig('output/%s.png')\n", outputFile);
+	if (outputFile == NULL) {
+		fprintf(fd, "plt.savefig('output/%s-%d.png')\n", graphName, fileCounter);
+		fileCounter++;
+	} else {
+		fprintf(fd, "plt.savefig('output/%s.png')\n", outputFile);
+	}
 	fprintf(fd, "plt.clf()\n\n");
-	fileCounter++;
 }
 
 void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph) {
@@ -118,7 +123,6 @@ void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph) {
 	fprintf(fd, "%s_pos = _nx.spring_layout(%s)\n", graphName, graphName);
 	fprintf(fd, "_nx.draw(%s, node_color='white', pos=%s_pos)\n", graphName, graphName);
 	printGenerateOutputImage(graphName, outputGraph->outputFile);
-	fileCounter++;
 }
 
 void generateGraph(char *graphName, GraphList * graph) {
