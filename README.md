@@ -61,7 +61,7 @@ Por otro lado, como se puede ver, los nombres de nodos y de grafos son strings y
 
 ### Palabras reservadas
 
-Estos nombres tienen el limitante de que, actualmente, **SÓLO** pueden ser compuestos por letras, sin números, guiones o demás caracteres especiales, además que dichos nombres no deben coincidir con las _palabras reservadas_ del lenguaje destinadas a otros comandos. Algunas son:
+Estos nombres tienen el limitante de que, actualmente, **SÓLO** pueden ser compuestos por letras y números, sin guiones o demás caracteres especiales, además que dichos nombres no deben coincidir con las _palabras reservadas_ del lenguaje destinadas a otros comandos. Algunas son:
 
 ```c
 colors
