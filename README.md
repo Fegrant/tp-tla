@@ -12,8 +12,18 @@ Para construir el compilador, se requieren las siguientes dependencias:
 - [GCC v11.1.0](https://gcc.gnu.org/)
 - [Make v4.3](https://www.gnu.org/software/make/)
 - [Python v3.11](https://www.python.org/downloads/release/python-3114/)
+- [Pipenv v2023.6.18](https://pypi.org/project/pipenv/)
 - [NetworkX v3.1](https://pypi.org/project/networkx/)
 - [Matplotlib v3.7](https://matplotlib.org/3.7.1/index.html)
+
+Se debe correr
+
+```bash
+user@machine:path/ $ pipenv shell
+user@machine:path/ $ pipenv install
+```
+
+en un terminal de la carpeta para instalar las dependencias vinculadas a Python, después de haber instalado pipenv y python en la correcta versión.
 
 Si en lugar de trabajar con un entorno _Linux_, se está construyendo el proyecto sobre un entorno _Microsoft Windows_, se debe instalar _Microsoft Visual Studio 2022_ con las extensiones para desarrollar aplicaciones en _C/C++_, así como también las herramientas requeridas, con excepción del compilador _GCC_ y la herramienta _Make_.
 
