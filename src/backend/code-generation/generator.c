@@ -118,7 +118,7 @@ void printGenerateOutputImage(char * graphName, char * outputFile) {
 }
 
 void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph) {
-	fprintf(fd, "%s_node_colors = None\n", graphName);
+	// fprintf(fd, "%s_node_colors = None\n", graphName);
 	printNodeLabels(graphName);
 	fprintf(fd, "%s_pos = _nx.spring_layout(%s)\n", graphName, graphName);
 	fprintf(fd, "_nx.draw(%s, node_color='white', pos=%s_pos)\n", graphName, graphName);
@@ -127,6 +127,7 @@ void generateOutputGraph(char *graphName, OutputGraphInstruction *outputGraph) {
 
 void generateGraph(char *graphName, GraphList * graph) {
 	fprintf(fd, "%s = _nx.Graph()\n", graphName);
+	fprintf(fd, "%s_node_colors = None\n", graphName);
 
 	NodeList *a = NULL;
 	char *center = NULL;
